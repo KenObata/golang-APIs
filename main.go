@@ -37,7 +37,7 @@ const (
 	mongoDBPort   = "27017"
 	mongoUser     = "Ken"
 	mongoPassword = "k0668466425"
-	dbname        = "databases"
+	dbname        = "test" //"databases"
 	colname       = "Job"
 )
 // mongo-driverのクライアントを自前で定義した構造体DBへセット
@@ -115,7 +115,7 @@ func getURL(URL string){
 		jsonJob.URL=job.URL[i]
 		jsonJob.Title=job.Title[i]
 		jsonJob.Company=job.Company[i]
-	}
+
 	// 構造体をJSON文字列に変換
 	jsonJobJSON, err := json.Marshal(jsonJob)
 	if err != nil {
@@ -126,6 +126,7 @@ func getURL(URL string){
 
 	// MongoDBへJSONデータをインサート
 	mongoClient.InsertMongoDB(jsonJobJSON)
+	}
 }
 
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
