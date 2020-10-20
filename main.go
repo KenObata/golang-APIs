@@ -5,10 +5,15 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"go.mongodb.org/mongo-driver/bson"
+	"html/template"
+
+	//"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	_ "Scraping/app/controllers"
 	"context"
 	_ "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,6 +31,7 @@ type JsonJob struct {
 	URL string		`json:"url"`
 	Title string	`json:"title"`
 	Company string	`json:"company"`
+	DateAdded string `json:"dateadded"`
 }
 
 // Array for Job struct
@@ -45,28 +51,64 @@ type DB struct {
 	client *mongo.Client
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w,r,"index.html")
+}
 
 func main() {
 	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
-	// get document
-	getURL(url)
 
-	/*
+	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
+	mongoClient, err := ConnectMongoDB() //mongoClient is a pointer of address to DB.
+	fmt.Println("my mongoClient:", mongoClient)
+	if err != nil {
+		fmt.Println("Error from ConnectMongoDB()!")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// get document　and store into mongo
+	mongoClient.getURL(url)
+	mongoClient.readMongo()
+
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
-	http.HandleFunc("/home",homeHandler)
+	http.HandleFunc("/",homeHandler)
 	server.ListenAndServe()
-
-	 */
 }
 
-func getURL(URL string){
-	//declare Jobs array
-	//var jobs Jobs
-	//declare Job struct
-	//var temp_job = new(Job)
+func outputHTML(w http.ResponseWriter, filename string, data interface{}) {
+	t, err := template.ParseFiles(filename)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	if err := t.Execute(w, data); err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+}
+func (db *DB) readMongo() error {
+	// get table(=collection)
+	collection := db.client.Database(dbname).Collection(colname)
+	cur, err := collection.Find(context.Background(), bson.D{{}})
+	if err != nil {
+		// TODO: Do something about the error
+	}
+	for cur.Next(context.Background()) {
+		var doc JsonJob
+		err := cur.Decode(&doc);
+		if err != nil {
+			return err
+		}
+		fmt.Println("company: ",doc.Company)
+	}
 
+	return nil
+}
+
+func (mongoClient *DB)getURL(URL string){
 	doc, err := goquery.NewDocument(URL)
 	if err != nil {
 		return
@@ -99,6 +141,7 @@ func getURL(URL string){
 	fmt.Println("all urls:",job.URL)
 
 	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
+	/*
 	mongoClient, err := ConnectMongoDB() //mongoClient is a pointer of address to DB.
 	fmt.Println("my mongoClient:", mongoClient)
 	if err != nil {
@@ -106,15 +149,18 @@ func getURL(URL string){
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	 */
 
 	// Unmarshal結果の格納先である構造体のポインターを取得
 	jsonJob := new(JsonJob)
 	//create json
 	var i int
+	currentTime := time.Now()
 	for i=0; i < len(job.Company);i++{
 		jsonJob.URL=job.URL[i]
 		jsonJob.Title=job.Title[i]
 		jsonJob.Company=job.Company[i]
+		jsonJob.DateAdded = currentTime.Format("2006-01-02")
 
 	// 構造体をJSON文字列に変換
 	jsonJobJSON, err := json.Marshal(jsonJob)
@@ -126,7 +172,7 @@ func getURL(URL string){
 
 	// MongoDBへJSONデータをインサート
 	mongoClient.InsertMongoDB(jsonJobJSON)
-	}
+	}//end of for loop of each array
 }
 
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却

@@ -1,0 +1,10 @@
+@import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css");
+
+th {
+    height: 70px;
+}
+
+th, td {
+    padding: 15px;
+    text-align: left;
+}
