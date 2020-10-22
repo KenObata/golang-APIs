@@ -1,0 +1,510 @@
+my mongoClient: &{0xc000288a80}
+bsonMap: map[company:IBM dateadded:2020-10-20 title:Software Engineer Intern (4 months) url:https://ca.linkedin.com/jobs/view/software-engineer-intern-4-months-at-ibm-2170812023?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=1&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.555209 -0700 PDT m=+4.145751272 [2.999781542s])
+bsonMap: map[company:Loblaw Companies Limited dateadded:2020-10-20 title:Loblaw Technology Internship - 12 Months url:https://ca.linkedin.com/jobs/view/loblaw-technology-internship-12-months-at-loblaw-companies-limited-2221538389?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=2&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.788645 -0700 PDT m=+4.379180130 [2.99986859s])
+bsonMap: map[company:Nestlé dateadded:2020-10-20 title:Data Scientist Internship url:https://ca.linkedin.com/jobs/view/data-scientist-internship-at-nestl%C3%A9-2186017057?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=3&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.789367 -0700 PDT m=+4.379902332 [2.999878188s])
+bsonMap: map[company:Bloomberg LP dateadded:2020-10-20 title:2021 Summer News Internship - Toronto url:https://ca.linkedin.com/jobs/view/2021-summer-news-internship-toronto-at-bloomberg-lp-2164771540?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=4&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.789864 -0700 PDT m=+4.380398780 [2.999537669s])
+bsonMap: map[company:Salesforce dateadded:2020-10-20 title:Winter 2021 Intern - Software Engineer - Tableau url:https://ca.linkedin.com/jobs/view/winter-2021-intern-software-engineer-tableau-at-salesforce-2191722941?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=5&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.791384 -0700 PDT m=+4.381919026 [2.999940245s])
+bsonMap: map[company:Unilever dateadded:2020-10-20 title:4-Month Marketing Internship - Summer 2021 url:https://ca.linkedin.com/jobs/view/4-month-marketing-internship-summer-2021-at-unilever-2166059222?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=6&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.791721 -0700 PDT m=+4.382255560 [2.999929852s])
+bsonMap: map[company:Into City Prep dateadded:2020-10-20 title:Venture Capital Intern - Toronto url:https://ca.linkedin.com/jobs/view/venture-capital-intern-toronto-at-into-city-prep-2190268799?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=7&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.792011 -0700 PDT m=+4.382545663 [2.99994925s])
+bsonMap: map[company:PepsiCo dateadded:2020-10-20 title:Sales Coop/Intern - Vancouver url:https://ca.linkedin.com/jobs/view/sales-coop-intern-vancouver-at-pepsico-2212328662?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=8&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.792253 -0700 PDT m=+4.382787696 [2.999954126s])
+bsonMap: map[company:Honey dateadded:2020-10-20 title:Software Engineering Intern url:https://ca.linkedin.com/jobs/view/software-engineering-intern-at-honey-2197059614?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=9&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.792502 -0700 PDT m=+4.383036930 [2.999953188s])
+bsonMap: map[company:Microsoft dateadded:2020-10-20 title:Intern Opportunities for Students: Sales Specialist (4 Month - Summer of 2021 Start Date) url:https://ca.linkedin.com/jobs/view/intern-opportunities-for-students-sales-specialist-4-month-summer-of-2021-start-date-at-microsoft-2190075599?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=10&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.792826 -0700 PDT m=+4.383360420 [2.999922134s])
+bsonMap: map[company:ID8 Lab dateadded:2020-10-20 title:Digital Marketing Intern url:https://ca.linkedin.com/jobs/view/digital-marketing-intern-at-id8-lab-2219209121?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=11&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.793112 -0700 PDT m=+4.383646330 [2.999945878s])
+bsonMap: map[company:Connor, Clark & Lunn Financial Group (CC&L) dateadded:2020-10-20 title:Investment Analyst - Intern url:https://ca.linkedin.com/jobs/view/investment-analyst-intern-at-connor-clark-lunn-financial-group-cc-l-2213161178?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=12&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.793388 -0700 PDT m=+4.383922665 [2.999957337s])
+bsonMap: map[company:Electronic Arts (EA) dateadded:2020-10-20 title:Corporate Strategy Intern url:https://ca.linkedin.com/jobs/view/corporate-strategy-intern-at-electronic-arts-ea-2173709209?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=13&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.793624 -0700 PDT m=+4.384158844 [2.999950856s])
+bsonMap: map[company:sgsco dateadded:2020-10-20 title:Intern - Data Science url:https://ca.linkedin.com/jobs/view/intern-data-science-at-sgsco-2196124331?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=14&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.793881 -0700 PDT m=+4.384415651 [2.999943128s])
+bsonMap: map[company:Konrad Group dateadded:2020-10-20 title:Associate Consultant, Intern url:https://ca.linkedin.com/jobs/view/associate-consultant-intern-at-konrad-group-2202441520?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=15&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.794148 -0700 PDT m=+4.384682231 [2.999952035s])
+bsonMap: map[company:Huawei dateadded:2020-10-20 title:Artificial Intelligence Researcher (Intern) url:https://ca.linkedin.com/jobs/view/artificial-intelligence-researcher-intern-at-huawei-2173731077?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=16&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.794392 -0700 PDT m=+4.384926809 [2.999961801s])
+bsonMap: map[company:Facebook dateadded:2020-10-20 title:Research Intern, Artificial Intelligence url:https://ca.linkedin.com/jobs/view/research-intern-artificial-intelligence-at-facebook-2214021229?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=17&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.794623 -0700 PDT m=+4.385157820 [2.999960686s])
+bsonMap: map[company:Mastercard dateadded:2020-10-20 title:Software Development Engineer Intern, Summer 2021 url:https://ca.linkedin.com/jobs/view/software-development-engineer-intern-summer-2021-at-mastercard-2194335772?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=18&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.794839 -0700 PDT m=+4.385373651 [2.999950788s])
+bsonMap: map[company:Pason dateadded:2020-10-20 title:Data Science Intern url:https://ca.linkedin.com/jobs/view/data-science-intern-at-pason-2165907255?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=19&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.795091 -0700 PDT m=+4.385625340 [2.99996186s])
+bsonMap: map[company:CN dateadded:2020-10-20 title:4-Month Marketing Internship - Summer 2021 url:https://ca.linkedin.com/jobs/view/4-month-marketing-internship-summer-2021-at-unilever-2206081606?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=20&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.795317 -0700 PDT m=+4.385851426 [2.999932886s])
+bsonMap: map[company:Philip Morris International dateadded:2020-10-20 title:Intern, Business Data Analyst url:https://ca.linkedin.com/jobs/view/intern-business-data-analyst-at-cn-2166030331?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=21&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.795598 -0700 PDT m=+4.386132240 [2.999949767s])
+bsonMap: map[company:Dream dateadded:2020-10-20 title:Digital Intern url:https://ca.linkedin.com/jobs/view/digital-intern-at-philip-morris-international-2184098846?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=22&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.795828 -0700 PDT m=+4.386362444 [2.999958481s])
+bsonMap: map[company:Catalyst Career Advisors dateadded:2020-10-20 title:Intern, Asset Management - Toronto url:https://ca.linkedin.com/jobs/view/intern-asset-management-toronto-at-dream-2218112262?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=23&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.796089 -0700 PDT m=+4.386623401 [2.999964245s])
+bsonMap: map[company:Scotiabank dateadded:2020-10-20 title:Investment Banking Intern url:https://ca.linkedin.com/jobs/view/investment-banking-intern-at-catalyst-career-advisors-2184321661?refId=b72f5e0f-0ec8-4baf-be33-496cbd8bebe3&position=24&pageNum=0&trk=public_jobs_job-result-card_result-card_full-click]
+ctx: context.Background.WithDeadline(2020-10-20 19:38:23.796288 -0700 PDT m=+4.386822350 [2.999961616s])
+company:  eSight Eyewear
+company:  Philip Morris International
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  Procter & Gamble
+company:  ESTATETIAL
+company:  Barilla Group
+company:  Activision
+company:  CakeAI
+company:  Scotiabank
+company:  PIXOMONDO
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Dream
+company:  Tyche & Gami
+company:  CPP Investments
+company:  Amazon
+company:  Loblaw Companies Limited
+company:  Microsoft
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  Procter & Gamble
+company:  ESTATETIAL
+company:  Barilla Group
+company:  Activision
+company:  CakeAI
+company:  Scotiabank
+company:  PIXOMONDO
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Dream
+company:  Tyche & Gami
+company:  CPP Investments
+company:  Amazon
+company:  Loblaw Companies Limited
+company:  Microsoft
+company:  IBM
+company:  Salesforce
+company:  Nestlé
+company:  Microsoft
+company:  Bloomberg LP
+company:  CakeAI
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Loblaw Companies Limited
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Barilla Group
+company:  Pinterest
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Huawei
+company:  Dream
+company:  Konrad Group
+company:  Facebook
+company:  Pason
+company:  Mastercard
+company:  Procter & Gamble
+company:  Catalyst Career Advisors
+company:  CN
+company:  Catalyst Career Advisors
+company:  IBM
+company:  Unilever
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  Procter & Gamble
+company:  ESTATETIAL
+company:  Barilla Group
+company:  Activision
+company:  CakeAI
+company:  Scotiabank
+company:  PIXOMONDO
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Dream
+company:  Tyche & Gami
+company:  CPP Investments
+company:  Amazon
+company:  Loblaw Companies Limited
+company:  Microsoft
+company:  IBM
+company:  Nestlé
+company:  Bloomberg LP
+company:  Salesforce
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Microsoft
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Loblaw Companies Limited
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Konrad Group
+company:  Huawei
+company:  Facebook
+company:  Pason
+company:  Scotiabank
+company:  Dream
+company:  Philip Morris International
+company:  CN
+company:  7917805 CANADA INC./ATLAS Computers & Electronics
+company:  Catalyst Career Advisors
+company:  SGS, an sgsco company
+company:  Mint
+company:  Catalyst Career Advisors
+company:  IBM
+company:  Unilever
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  American Iron & Metal (AIM)
+company:  CPP Investments
+company:  Tesla
+company:  Loblaw Companies Limited
+company:  Catalyst Career Advisors
+company:  IBM
+company:  Unilever
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  ID8 Lab
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  American Iron & Metal (AIM)
+company:  CPP Investments
+company:  IBM
+company:  ID8 Lab
+company:  Nestlé
+company:  Bloomberg LP
+company:  Salesforce
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Microsoft
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Loblaw Companies Limited
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Konrad Group
+company:  Huawei
+company:  Facebook
+company:  Pason
+company:  Scotiabank
+company:  Dream
+company:  Philip Morris International
+company:  CN
+company:  7917805 CANADA INC./ATLAS Computers & Electronics
+company:  Catalyst Career Advisors
+company:  SGS, an sgsco company
+company:  IBM
+company:  ID8 Lab
+company:  Nestlé
+company:  Bloomberg LP
+company:  Salesforce
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Microsoft
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Loblaw Companies Limited
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Konrad Group
+company:  Huawei
+company:  Facebook
+company:  Pason
+company:  Scotiabank
+company:  Dream
+company:  Philip Morris International
+company:  CN
+company:  7917805 CANADA INC./ATLAS Computers & Electronics
+company:  Catalyst Career Advisors
+company:  SGS, an sgsco company
+company:  IBM
+company:  ID8 Lab
+company:  Nestlé
+company:  Bloomberg LP
+company:  Salesforce
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Microsoft
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Loblaw Companies Limited
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Konrad Group
+company:  Huawei
+company:  Facebook
+company:  Pason
+company:  Scotiabank
+company:  Dream
+company:  Philip Morris International
+company:  CN
+company:  7917805 CANADA INC./ATLAS Computers & Electronics
+company:  Catalyst Career Advisors
+company:  SGS, an sgsco company
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  ID8 Lab
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  American Iron & Metal (AIM)
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  CPP Investments
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  ID8 Lab
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  American Iron & Metal (AIM)
+company:  CPP Investments
+company:  Tesla
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  ID8 Lab
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  American Iron & Metal (AIM)
+company:  CPP Investments
+company:  Tesla
+company:  ISU Corp
+company:  CN
+company:  ESTATETIAL
+company:  GAOTek Inc.
+company:  ABB
+company:  Electronic Arts (EA)
+company:  Baxter International Inc.
+company:  Dream
+company:  AssetWorks LLC
+company:  Matrox
+company:  ABB
+company:  Workwolf - We're Hiring!
+company:  Celestica
+company:  Ciena
+company:  GAOTek Inc.
+company:  Celestica
+company:  Philip Morris International
+company:  GE Healthcare
+company:  ABB
+company:  GAOTek Inc.
+company:  Plains Midstream Canada
+company:  Mark43
+company:  Celestica
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Catalyst Career Advisors
+company:  Salesforce
+company:  Matrox
+company:  PepsiCo
+company:  Electronic Arts (EA)
+company:  Nestlé
+company:  ID8 Lab
+company:  Demonware
+company:  Scotiabank
+company:  Philip Morris International
+company:  RB
+company:  The Reach Gallery Museum Abbotsford
+company:  Activision
+company:  GAOTek Inc.
+company:  Huawei
+company:  CN
+company:  CareerUp, Inc.
+company:  Microsoft
+company:  CPP Investments
+company:  TD
+company:  Dream
+company:  SAP
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Catalyst Career Advisors
+company:  Salesforce
+company:  Matrox
+company:  PepsiCo
+company:  Electronic Arts (EA)
+company:  Nestlé
+company:  ID8 Lab
+company:  Demonware
+company:  Scotiabank
+company:  RB
+company:  Philip Morris International
+company:  The Reach Gallery Museum Abbotsford
+company:  Activision
+company:  GAOTek Inc.
+company:  Huawei
+company:  CN
+company:  CareerUp, Inc.
+company:  CPP Investments
+company:  TD
+company:  Microsoft
+company:  Dream
+company:  SAP
+company:  Catalyst Career Advisors
+company:  Unilever
+company:  IBM
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  Scotiabank
+company:  ID8 Lab
+company:  Into City Prep
+company:  Nestlé
+company:  Partner One Capital
+company:  GAOTek Inc.
+company:  ESTATETIAL
+company:  PIXOMONDO
+company:  Activision
+company:  Bloomberg LP
+company:  RB
+company:  Facebook
+company:  Amazon
+company:  Microsoft
+company:  SGS, an sgsco company
+company:  Dream
+company:  CN
+company:  American Iron & Metal (AIM)
+company:  CPP Investments
+company:  Tesla
+company:  Activision
+company:  ABB
+company:  CNH Industrial
+company:  GAOTek Inc.
+company:  NVIDIA
+company:  ABB
+company:  Nento Canada
+company:  Hitachi ABB Power Grids
+company:  Synopsys Inc
+company:  Synopsys Inc
+company:  GAOTek Inc.
+company:  Anthony Delodder Real Estate Office 
+company:  Ciena
+company:  Mark Anthony Group
+company:  GAOTek Inc.
+company:  GAOTek Inc.
+company:  Magna International
+company:  Pomerleau
+company:  GAOTek Inc.
+company:  Matrox
+company:  Kiewit
+company:  Matrox
+company:  Stantec
+company:  IBM
+company:  Loblaw Companies Limited
+company:  Nestlé
+company:  Bloomberg LP
+company:  Salesforce
+company:  Unilever
+company:  Into City Prep
+company:  PepsiCo
+company:  Honey
+company:  Microsoft
+company:  ID8 Lab
+company:  Connor, Clark & Lunn Financial Group (CC&L)
+company:  Electronic Arts (EA)
+company:  sgsco
+company:  Konrad Group
+company:  Huawei
+company:  Facebook
+company:  Mastercard
+company:  Pason
+company:  CN
+company:  Philip Morris International
+company:  Dream
+company:  Catalyst Career Advisors
+company:  Scotiabank
