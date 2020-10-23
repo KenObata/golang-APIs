@@ -20,35 +20,29 @@
             <th>Company</th>
             <th>Title</th>
             <th>URL</th>
+            <th>Date Added</th>
         </tr>
         </thead>
 
-        <ul>
-            {{range .}}
-                <li>{{.Company}}</li>
-                <li>{{.URL}}</li>
-            {{end}}
-        </ul>
-
         <tbody>
-        <tr>
-            <td>1</td>
-            <td>{{.Company}}</td>
-            <td>{{.Title}}</td>
-            <td>{{.URL}}</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>{{.Company}}</td>
-            <td>{{.Title}}</td>
-            <td>{{.URL}}</td>
-        </tr>
-        <tr>
+
+            {{range .}}
+                <tr>
+                    <td>1</td>
+                    <td>{{.Company}}</td>
+                    <td>{{.Title}}</td>
+                    <td>{{.URL}}</td>
+                    <td>{{.DateAdded}}</td>
+                </tr>
+            {{end}}
+
+
+        <!--tr>
             <td>3</td>
             <td>Intel</td>
             <td>Software Engineering Intern</td>
             <td><a href="google.com">google.com</a></td>
-        </tr>
+        </tr-->
         </tbody>
     </table>
 </div>
