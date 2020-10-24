@@ -11,14 +11,22 @@
 <body>
 
 <div class="container">
-    <h2>Table</h2>
-    <p>The .table class adds basic styling (light padding and only horizontal dividers) to a table:</p>
+    <h2>Integrated Job Postings for Software Engineer Interns in Canada</h2>
+    <p>This webservice posts open job opportunities in Canada for Software Engineering students.</p>
+    <div class="wrap">
+        <div class="search">
+            <input type="text" class="searchTerm" placeholder="Search">
+            <button type="submit" class="searchButton">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+    </div>
     <table class="table">
         <thead>
         <tr>
-            <th>#</th>
+            <!--th>#</th-->
             <th>Company</th>
-            <th>Title</th>
+            <!--th>Title</th-->
             <th>URL</th>
             <th>Date Added</th>
         </tr>
@@ -28,10 +36,11 @@
 
             {{range .}}
                 <tr>
-                    <td>1</td>
+                    <!--td>1</td-->
                     <td>{{.Company}}</td>
-                    <td>{{.Title}}</td>
-                    <td>{{.URL}}</td>
+
+
+                    <td><a href="{{.URL}}">{{.Title}}</a></td>
                     <td>{{.DateAdded}}</td>
                 </tr>
             {{end}}
@@ -49,3 +58,25 @@
 
 </body>
 </html>
+
+
+<script>
+    function searchFunction() {
+        // Declare variables
+        var input, filter, ul, li, a, i;
+        input = document.getElementById("mySearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myMenu");
+        li = ul.getElementsByTagName("li");
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            a = li[i].getElementsByTagName("a")[0];
+            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+</script>

@@ -37,6 +37,8 @@ type JsonJob struct {
 
 // Array for Job struct
 type Jobs []*Job
+//this month use for mongo find filtering
+//var thisYear string = time.RFC3339[0:8]
 
 const (
 	// 接続先のDB情報を入力
@@ -80,7 +82,7 @@ func main() {
 
 	// web crawl　and store into mongo
 	mongoClient.getURL(url)
-	//mongoClient.readMongo()
+	//mongoClient.removeDuplicatesMongo()
 
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
@@ -88,13 +90,21 @@ func main() {
 	http.HandleFunc("/",homeHandler)
 	server.ListenAndServe()
 }
+/*
+func (db *DB) removeDuplicatesMongo(){
+	// get table(=collection)
+	collection := db.client.Database(dbname).Collection(colname)
+	//remove duplicated URL
+
+}
+ */
 
 func (db *DB) readMongo() []JsonJob {
 	fmt.Println("readMongo is called.")
 	log.Println("readMongo is called!")
 	// get table(=collection)
 	collection := db.client.Database(dbname).Collection(colname)
-	cur, err := collection.Find(context.Background(), bson.D{{}})
+	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$eq", "/2020-/"}}}})
 	if err != nil {
 		// TODO: Do something about the error
 	}
@@ -210,9 +220,14 @@ func (db *DB) InsertMongoDB(json []byte) {
 	collection := db.client.Database(dbname).Collection(colname)
 	fmt.Println("bsonMap:",bsonMap)
 	//fmt.Println("ctx:", ctx)
+	readOne, err := collection.Find(context.Background(), bson.D{{"url",bsonMap["url"]}})
+	if readOne != nil{
+		fmt.Println("there already exists:", bsonMap["company"])
+		return
+	}
+	//else
 	_, err = collection.InsertOne(ctx, bsonMap)
 	if err != nil {
-		fmt.Println("error! from last case.")
 		fmt.Println(err)
 		return
 	}
