@@ -3,16 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"go.mongodb.org/mongo-driver/bson"
 	"html/template"
 	"log"
-
-	//"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	_ "Scraping/app/controllers"
 	"context"
@@ -24,19 +24,20 @@ import (
 
 type Job struct {
 	//ID string
-	URL[] string
-	Title[] string
-	Company[] string
+	URL     []string
+	Title   []string
+	Company []string
 }
 type JsonJob struct {
-	URL string		`json:"url"`
-	Title string	`json:"title"`
-	Company string	`json:"company"`
+	URL       string `json:"url"`
+	Title     string `json:"title"`
+	Company   string `json:"company"`
 	DateAdded string `json:"dateadded"`
 }
 
 // Array for Job struct
 type Jobs []*Job
+
 //this month use for mongo find filtering
 //var thisYear string = time.RFC3339[0:8]
 
@@ -49,6 +50,7 @@ const (
 	dbname        = "test" //"databases"
 	colname       = "Job"
 )
+
 // mongo-driverのクライアントを自前で定義した構造体DBへセット
 type DB struct {
 	client *mongo.Client
@@ -63,7 +65,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	job_struct := mongoClient.readMongo()
-	log.Println("job_struct[0]:",job_struct[0])
+	log.Println("job_struct[0]:", job_struct[0])
 	t, _ := template.ParseFiles("index.html")
 	t.Execute(w, job_struct)
 }
@@ -87,9 +89,10 @@ func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
-	http.HandleFunc("/",homeHandler)
+	http.HandleFunc("/", homeHandler)
 	server.ListenAndServe()
 }
+
 /*
 func (db *DB) removeDuplicatesMongo(){
 	// get table(=collection)
@@ -97,7 +100,7 @@ func (db *DB) removeDuplicatesMongo(){
 	//remove duplicated URL
 
 }
- */
+*/
 
 func (db *DB) readMongo() []JsonJob {
 	fmt.Println("readMongo is called.")
@@ -110,10 +113,10 @@ func (db *DB) readMongo() []JsonJob {
 	}
 
 	var jobs []JsonJob
-	var doc JsonJob//こっちに移動した
+	var doc JsonJob //こっちに移動した
 	for cur.Next(context.Background()) {
 		//var doc JsonJob
-		err := cur.Decode(&doc);
+		err := cur.Decode(&doc)
 		if err != nil {
 			fmt.Println("error at cur.Decode(&doc)")
 		}
@@ -128,7 +131,7 @@ func (db *DB) readMongo() []JsonJob {
 	return jobs
 }
 
-func (mongoClient *DB)getURL(URL string){
+func (mongoClient *DB) getURL(URL string) {
 	doc, err := goquery.NewDocument(URL)
 	if err != nil {
 		return
@@ -139,21 +142,21 @@ func (mongoClient *DB)getURL(URL string){
 	var titles []string
 	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
 		url, _ := s.Attr("href")
-		title:= s.Text()
+		title := s.Text()
 
-		if  strings.Contains(url, "https://ca.linkedin.com/jobs/view/"){
+		if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") {
 			urls = append(urls, url)
 			titles = append(titles, title)
 
-		} else if  strings.Contains(url, "/company/"){
+		} else if strings.Contains(url, "/company/") {
 			//get company name
 			company := s.Text()
-			companies=append(companies,company)
+			companies = append(companies, company)
 		}
 	})
-	job :=&Job{
-		Title: titles,
-		URL: urls,
+	job := &Job{
+		Title:   titles,
+		URL:     urls,
 		Company: companies,
 	}
 	//fmt.Println("all titles:",job.Title)
@@ -165,23 +168,23 @@ func (mongoClient *DB)getURL(URL string){
 	//create json
 	var i int
 	currentTime := time.Now()
-	for i=0; i < len(job.Company);i++{
-		jsonJob.URL=job.URL[i]
-		jsonJob.Title=job.Title[i]
-		jsonJob.Company=job.Company[i]
+	for i = 0; i < len(job.Company); i++ {
+		jsonJob.URL = job.URL[i]
+		jsonJob.Title = job.Title[i]
+		jsonJob.Company = job.Company[i]
 		jsonJob.DateAdded = currentTime.Format("2006-01-02")
 
-	// 構造体をJSON文字列に変換
-	jsonJobJSON, err := json.Marshal(jsonJob)
-	if err != nil {
-		fmt.Println("error from json.Marshal(jsonJob)")
-		fmt.Println(err)
-		return
-	}
+		// 構造体をJSON文字列に変換
+		jsonJobJSON, err := json.Marshal(jsonJob)
+		if err != nil {
+			fmt.Println("error from json.Marshal(jsonJob)")
+			fmt.Println(err)
+			return
+		}
 
-	// Insert JSON data to MongoDB
-	mongoClient.InsertMongoDB(jsonJobJSON)
-	}//end of for loop of each array
+		// Insert JSON data to MongoDB
+		mongoClient.InsertMongoDB(jsonJobJSON)
+	} //end of for loop of each array
 }
 
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
@@ -218,10 +221,10 @@ func (db *DB) InsertMongoDB(json []byte) {
 	}
 	// Insert先のコレクション名からクライアント作成
 	collection := db.client.Database(dbname).Collection(colname)
-	fmt.Println("bsonMap:",bsonMap)
+	fmt.Println("bsonMap:", bsonMap)
 	//fmt.Println("ctx:", ctx)
-	readOne, err := collection.Find(context.Background(), bson.D{{"url",bsonMap["url"]}})
-	if readOne != nil{
+	readOne, err := collection.Find(context.Background(), bson.D{{"url", bsonMap["url"]}})
+	if readOne != nil {
 		fmt.Println("there already exists:", bsonMap["company"])
 		return
 	}
