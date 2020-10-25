@@ -1,25 +1,24 @@
 package main
 
 import (
+	_ "Scraping/app/controllers"
+	"html/template"
+
+	"context"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+	_ "time"
 
 	"github.com/PuerkitoBio/goquery"
-
 	"go.mongodb.org/mongo-driver/bson"
-
-	_ "Scraping/app/controllers"
-	"context"
 	_ "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	_ "time"
 )
 
 type Job struct {
@@ -90,6 +89,8 @@ func main() {
 		Addr: "127.0.0.1:8080",
 	}
 	http.HandleFunc("/", homeHandler)
+	//add css below
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	server.ListenAndServe()
 }
 
@@ -103,13 +104,14 @@ func (db *DB) removeDuplicatesMongo(){
 */
 
 func (db *DB) readMongo() []JsonJob {
-	fmt.Println("readMongo is called.")
 	log.Println("readMongo is called!")
 	// get table(=collection)
 	collection := db.client.Database(dbname).Collection(colname)
-	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$eq", "/2020-/"}}}})
+	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		// TODO: Do something about the error
+		fmt.Println("error at collection.Find()")
+		return nil
 	}
 
 	var jobs []JsonJob
@@ -119,15 +121,11 @@ func (db *DB) readMongo() []JsonJob {
 		err := cur.Decode(&doc)
 		if err != nil {
 			fmt.Println("error at cur.Decode(&doc)")
+			return nil
 		}
-		//fmt.Println("company: ",doc.Company)
-
 		//append to jobs
 		jobs = append(jobs, doc)
-		//このfunctionから、homeHandler にJsonJob (=doc)を渡したい
-		//return doc
 	}
-	//fmt.Println("jobs:",jobs[0])
 	return jobs
 }
 

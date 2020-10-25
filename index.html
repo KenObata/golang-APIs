@@ -2,8 +2,8 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--link rel="stylesheet" href="css/style.css"-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
@@ -36,22 +36,11 @@
 
             {{range .}}
                 <tr>
-                    <!--td>1</td-->
                     <td>{{.Company}}</td>
-
-
                     <td><a href="{{.URL}}">{{.Title}}</a></td>
                     <td>{{.DateAdded}}</td>
                 </tr>
             {{end}}
-
-
-        <!--tr>
-            <td>3</td>
-            <td>Intel</td>
-            <td>Software Engineering Intern</td>
-            <td><a href="google.com">google.com</a></td>
-        </tr-->
         </tbody>
     </table>
 </div>
@@ -60,23 +49,3 @@
 </html>
 
 
-<script>
-    function searchFunction() {
-        // Declare variables
-        var input, filter, ul, li, a, i;
-        input = document.getElementById("mySearch");
-        filter = input.value.toUpperCase();
-        ul = document.getElementById("myMenu");
-        li = ul.getElementsByTagName("li");
-
-        // Loop through all list items, and hide those who don't match the search query
-        for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("a")[0];
-            if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = "";
-            } else {
-                li[i].style.display = "none";
-            }
-        }
-    }
-</script>

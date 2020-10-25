@@ -8,6 +8,6 @@ RUN go build main.go
 
 FROM alpine
 COPY --from=builder /main /main
-COPY --from=builder /Template /Template
+COPY --from=builder /app /app
 COPY --from=builder /css /css
 ENTRYPOINT ["/main"]
