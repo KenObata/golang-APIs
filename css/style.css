@@ -1,14 +1,61 @@
 @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css");
 
+table {
+    width: 100%;
+}
+
 th {
     height: 70px;
+    background-color: yellowgreen;
 }
 
 th, td {
     padding: 15px;
-    text-align: left;
-}
-th{
-    background-color: green;
+    text-align: center;
+    /*width: 33.33%;  to enable "word-break: break-all" */
+    word-break: break-all; /* 4. */
 }
 
+table, td {
+    border-collapse: collapse;
+    border: 1px solid #000;
+}
+
+thead {
+    display: table; /* to take the same width as tr */
+    width: calc(100% - 17px);  /*- 17px because of the scrollbar width */
+}
+
+tbody {
+    display: block; /* to enable vertical scrolling */
+    max-height: 450px; /* e.g. */
+    overflow-y: scroll; /* keeps the scrollbar even if it doesn't need it; display purpose */
+}
+
+tr {
+    display: table; /* display purpose; th's border */
+    width: 100%;
+    box-sizing: border-box; /* because of the border (Chrome needs this line, but not FF) */
+}
+
+td {
+    text-align: left;
+    border-bottom: none;
+    border-left: none;
+}
+
+.date {
+    width: 20%;
+}
+
+.company {
+    width: 30%;
+}
+
+.url {
+    width: 50%;
+}
+
+.search {
+    margin-bottom: 10px;
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+
+    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
+    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script-->
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Integrated Job Postings for Software Engineer Interns in Canada</h2>
+    <p>This webservice posts open job opportunities in Canada for Software Engineering students.</p>
+    <div class="wrap">
+        <div class="search">
+            <form action="" method="get">
+                <input type="text" name="name" class="searchTerm" placeholder="Search by company:"/>
+            </form>
+
+            <!--input type="text" class="searchTerm" placeholder="Search">
+            <button type="submit" class="searchButton">
+                <i class="fa fa-search"></i>
+            </button-->
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <!--th>#</th-->
+            <th class="company">Company</th>
+            <!--th>Title</th-->
+            <th class="url">URL</th>
+            <th class="date">Date Added</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+            {{range .}}
+                <tr>
+                    <td class="company">{{.Company}}</td>
+                    <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
+                    <td class="date">{{.DateAdded}}</td>
+                </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
+
+

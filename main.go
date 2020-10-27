@@ -63,10 +63,25 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	job_struct := mongoClient.readMongo()
-	log.Println("job_struct[0]:", job_struct[0])
-	t, _ := template.ParseFiles("index.html")
-	t.Execute(w, job_struct)
+	// Working Directory
+	wd, err := os.Getwd()
+	t, err := template.ParseFiles(wd + "/app/view/index.html")
+	if err != nil {
+		log.Println("Error from template.ParseFiles()!")
+		log.Println(err)
+	}
+
+	name := r.FormValue("name")
+	log.Println("Company:", name, "is input.")
+	if name != "" {
+		new_job_struct := mongoClient.readMongo(name)
+		t.Execute(w, new_job_struct)
+		time.Sleep(1000) //debug
+	} else {
+		job_struct := mongoClient.readMongo()
+		//log.Println("job_struct[0]:", job_struct[0])
+		t.Execute(w, job_struct)
+	}
 }
 
 func main() {
@@ -90,7 +105,7 @@ func main() {
 	}
 	http.HandleFunc("/", homeHandler)
 	//add css below
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
 }
 
@@ -103,15 +118,27 @@ func (db *DB) removeDuplicatesMongo(){
 }
 */
 
-func (db *DB) readMongo() []JsonJob {
-	log.Println("readMongo is called!")
+func (db *DB) readMongo(user_iput ...string) []JsonJob {
+	log.Println("readMongo: user input is ", user_iput)
 	// get table(=collection)
 	collection := db.client.Database(dbname).Collection(colname)
-	cur, err := collection.Find(context.Background(), bson.D{})
+
+	findOptions := options.Find()
+	// Sort by `price` field descending
+	findOptions.SetSort(bson.D{{"dateadded", -1}})
+
+	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
 	if err != nil {
-		// TODO: Do something about the error
-		fmt.Println("error at collection.Find()")
 		return nil
+	}
+
+	//log.Println("user_iput[0]", user_iput[0])
+	if len(user_iput) > 0 {
+		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
+		if err != nil {
+			log.Println("err from user input:", err)
+			return nil
+		}
 	}
 
 	var jobs []JsonJob
@@ -125,6 +152,7 @@ func (db *DB) readMongo() []JsonJob {
 		}
 		//append to jobs
 		jobs = append(jobs, doc)
+		log.Println("searched company:", doc.Company)
 	}
 	return jobs
 }
