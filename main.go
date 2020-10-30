@@ -84,7 +84,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
+func ticker() {
+	t := time.NewTicker(24 * time.Hour) //24 Hour周期の ticker
+	defer t.Stop()
+
 	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 
 	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
@@ -98,7 +101,10 @@ func main() {
 
 	// web crawl　and store into mongo
 	mongoClient.getURL(url)
-	//mongoClient.removeDuplicatesMongo()
+
+}
+func main() {
+	ticker()
 
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
