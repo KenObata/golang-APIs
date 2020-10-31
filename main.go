@@ -2,11 +2,10 @@ package main
 
 import (
 	_ "Scraping/app/controllers"
-	"html/template"
-
 	"context"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -34,6 +33,21 @@ type JsonJob struct {
 	DateAdded string `json:"dateadded"`
 }
 
+type User struct {
+	//Capital letter means public
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type JWT struct {
+	Token string `json:"token"`
+}
+
+type Error struct {
+	Message string `json:"message"`
+}
+
 // Array for Job struct
 type Jobs []*Job
 
@@ -48,6 +62,7 @@ const (
 	mongoPassword = "k0668466425"
 	dbname        = "test" //"databases"
 	colname       = "Job"
+	colnameUser   = "User"
 )
 
 // mongo-driverのクライアントを自前で定義した構造体DBへセット
@@ -84,6 +99,72 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func errorInResponse(w http.ResponseWriter, status int, error Error) {
+	w.WriteHeader(status) // HTTP status code such as 400, 500
+	json.NewEncoder(w).Encode(error)
+	return
+}
+
+func signUpHandler(w http.ResponseWriter, r *http.Request) {
+	var user User
+	//var error Error
+
+	// Working Directory
+	wd, err := os.Getwd()
+	t, err := template.ParseFiles(wd + "/app/view/signup.html")
+	if err != nil {
+		log.Println(err)
+	}
+	t.Execute(w, nil)
+
+	//we ganna insert into User collection (use later)
+	mongoClient, _ := ConnectMongoDB()
+
+	//get ID by number of users + 1
+	collection := mongoClient.client.Database(dbname).Collection(colnameUser)
+	cur, err := collection.Find(context.Background(), bson.D{})
+	numOfUsers := 0
+	for cur.Next(context.Background()) {
+		numOfUsers += 1
+	}
+	user.ID = numOfUsers + 1
+	//get email from html file
+	email := r.FormValue("email")
+	if email != "" {
+		log.Println("email:", email)
+		user.Email = email
+	}
+	password := r.FormValue("password")
+	if password != "" && len(password) > 3 {
+		user.Password = password
+	}
+	json.NewDecoder(r.Body).Decode(&user)
+	/*
+		if user.Email == "" {
+			errorInResponse(w, http.StatusBadRequest, error)
+			return
+		}
+		if user.Password == "" {
+			errorInResponse(w, http.StatusBadRequest, error)
+			return
+		}
+
+	*/
+
+	//hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//user.Password = string(hash)
+
+	userJSON, err := json.Marshal(user)
+	log.Println("email:", user.Email, "password:", user.Password)
+	if err != nil {
+		return
+	}
+	mongoClient.InsertMongoDB(userJSON, colnameUser)
+}
+
 func ticker() {
 	t := time.NewTicker(24 * time.Hour) //24 Hour周期の ticker
 	defer t.Stop()
@@ -98,11 +179,10 @@ func ticker() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
 	// web crawl　and store into mongo
 	mongoClient.getURL(url)
-
 }
+
 func main() {
 	ticker()
 
@@ -110,22 +190,14 @@ func main() {
 		Addr: "127.0.0.1:8080",
 	}
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/signup", signUpHandler)
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
 }
 
-/*
-func (db *DB) removeDuplicatesMongo(){
-	// get table(=collection)
-	collection := db.client.Database(dbname).Collection(colname)
-	//remove duplicated URL
-
-}
-*/
-
 func (db *DB) readMongo(user_iput ...string) []JsonJob {
-	log.Println("readMongo: user input is ", user_iput)
+	//log.Println("readMongo: user input is ", user_iput)
 	// get table(=collection)
 	collection := db.client.Database(dbname).Collection(colname)
 
@@ -138,7 +210,6 @@ func (db *DB) readMongo(user_iput ...string) []JsonJob {
 		return nil
 	}
 
-	//log.Println("user_iput[0]", user_iput[0])
 	if len(user_iput) > 0 {
 		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
 		if err != nil {
@@ -148,7 +219,7 @@ func (db *DB) readMongo(user_iput ...string) []JsonJob {
 	}
 
 	var jobs []JsonJob
-	var doc JsonJob //こっちに移動した
+	var doc JsonJob
 	for cur.Next(context.Background()) {
 		//var doc JsonJob
 		err := cur.Decode(&doc)
@@ -158,7 +229,7 @@ func (db *DB) readMongo(user_iput ...string) []JsonJob {
 		}
 		//append to jobs
 		jobs = append(jobs, doc)
-		log.Println("searched company:", doc.Company)
+		//log.Println("searched company:", doc.Company)
 	}
 	return jobs
 }
@@ -215,7 +286,7 @@ func (mongoClient *DB) getURL(URL string) {
 		}
 
 		// Insert JSON data to MongoDB
-		mongoClient.InsertMongoDB(jsonJobJSON)
+		mongoClient.InsertMongoDB(jsonJobJSON, colname)
 	} //end of for loop of each array
 }
 
@@ -240,7 +311,7 @@ func ConnectMongoDB() (*DB, error) {
 
 // DB構造体へInsert用のメソッドを定義
 // JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
-func (db *DB) InsertMongoDB(json []byte) {
+func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	// 3秒でタイムアウトするコンテキストを作成
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -252,13 +323,24 @@ func (db *DB) InsertMongoDB(json []byte) {
 		return
 	}
 	// Insert先のコレクション名からクライアント作成
-	collection := db.client.Database(dbname).Collection(colname)
+	collection := db.client.Database(dbname).Collection(table_name) //colname is the parameter for table_name
 	fmt.Println("bsonMap:", bsonMap)
 	//fmt.Println("ctx:", ctx)
-	readOne, err := collection.Find(context.Background(), bson.D{{"url", bsonMap["url"]}})
-	if readOne != nil {
-		fmt.Println("there already exists:", bsonMap["company"])
-		return
+
+	if table_name == colname {
+		readOne, _ := collection.Find(context.Background(), bson.D{{"url", bsonMap["url"]}})
+		if readOne != nil {
+			//fmt.Println("there already exists:", bsonMap["company"])
+			return
+		}
+	}
+
+	if table_name == colnameUser {
+		readOne, _ := collection.Find(context.Background(), bson.D{{"email", bsonMap["email"]}})
+		if readOne != nil {
+			//This user is already registered.
+			return
+		}
 	}
 	//else
 	_, err = collection.InsertOne(ctx, bsonMap)
