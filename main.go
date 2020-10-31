@@ -342,7 +342,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 			return
 		}
 	}
-	//else
+
 	_, err = collection.InsertOne(ctx, bsonMap)
 	if err != nil {
 		fmt.Println(err)
