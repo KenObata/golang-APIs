@@ -13,7 +13,6 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -36,11 +35,11 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	log.Println("Company:", name, "is input.")
 	if name != "" {
-		new_job_struct := mongoClient.readMongo(name)
+		new_job_struct := mongoClient.ReadMongo(name)
 		t.Execute(w, new_job_struct)
 		time.Sleep(1000) //debug
 	} else {
-		job_struct := mongoClient.readMongo()
+		job_struct := mongoClient.ReadMongo()
 		t.Execute(w, job_struct)
 	}
 }
@@ -62,44 +61,6 @@ func ConnectMongoDB() (*DB, error) {
 		return nil, err
 	}
 	return &DB{client}, nil
-}
-
-func (db *DB) readMongo(user_iput ...string) []JsonJob {
-	log.Println("readMongo: user input is ", user_iput)
-	// get table(=collection)
-	collection := db.Client.Database(Dbname).Collection(Colname)
-
-	findOptions := options.Find()
-	// Sort by `price` field descending
-	findOptions.SetSort(bson.D{{"dateadded", -1}})
-
-	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
-	if err != nil {
-		return nil
-	}
-
-	if len(user_iput) > 0 {
-		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
-		if err != nil {
-			log.Println("err from user input:", err)
-			return nil
-		}
-	}
-
-	var jobs []JsonJob
-	var doc JsonJob
-	for cur.Next(context.Background()) {
-		//var doc JsonJob
-		err := cur.Decode(&doc)
-		if err != nil {
-			fmt.Println("error at cur.Decode(&doc)")
-			return nil
-		}
-		//append to jobs
-		jobs = append(jobs, doc)
-		log.Println("searched company:", doc.Company)
-	}
-	return jobs
 }
 
 func (mongoClient *DB) GetURL(URL string) {
@@ -130,9 +91,6 @@ func (mongoClient *DB) GetURL(URL string) {
 		URL:     urls,
 		Company: companies,
 	}
-	//fmt.Println("all titles:",job.Title)
-	//fmt.Println("all comapnies:",job.Company)
-	//fmt.Println("all urls:",job.URL)
 
 	// Unmarshal結果の格納先である構造体のポインターを取得
 	jsonJob := new(JsonJob)

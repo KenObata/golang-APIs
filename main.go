@@ -17,9 +17,6 @@ import (
 	_ "go.mongodb.org/mongo-driver/bson"
 )
 
-//this month use for mongo find filtering
-//var thisYear string = time.RFC3339[0:8]
-
 func errorInResponse(w http.ResponseWriter, status int, error controllers.Error) {
 	w.WriteHeader(status) // HTTP status code such as 400, 500
 	json.NewEncoder(w).Encode(error)

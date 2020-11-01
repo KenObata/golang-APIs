@@ -3,9 +3,11 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // DB構造体へInsert用のメソッドを定義
@@ -47,4 +49,42 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 		fmt.Println(err)
 		return
 	}
+}
+
+func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
+	log.Println("ReadMongo: user input is ", user_iput)
+	// get table(=collection)
+	collection := db.Client.Database(Dbname).Collection(Colname)
+
+	findOptions := options.Find()
+	// Sort by `price` field descending
+	findOptions.SetSort(bson.D{{"dateadded", -1}})
+
+	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
+	if err != nil {
+		return nil
+	}
+
+	if len(user_iput) > 0 {
+		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
+		if err != nil {
+			log.Println("err from user input:", err)
+			return nil
+		}
+	}
+
+	var jobs []JsonJob
+	var doc JsonJob
+	for cur.Next(context.Background()) {
+		//var doc JsonJob
+		err := cur.Decode(&doc)
+		if err != nil {
+			fmt.Println("error at cur.Decode(&doc)")
+			return nil
+		}
+		//append to jobs
+		jobs = append(jobs, doc)
+		log.Println("searched company:", doc.Company)
+	}
+	return jobs
 }
