@@ -1,26 +1,24 @@
 package controllers
 
-/*
 import (
-	"Scraping/data"
-	_ "Scraping/data"
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/PuerkitoBio/goquery"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-//noinspection ALL
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	//http.ServeFile(w,r,"index.html")
+func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	mongoClient, err := ConnectMongoDB()
 	if err != nil {
 		fmt.Println("Error from ConnectMongoDB()!")
@@ -47,41 +45,29 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-const (
-	// 接続先のDB情報を入力
-	mongoDBHost   = "127.0.0.1"
-	mongoDBPort   = "27017"
-	mongoUser     = "Ken"
-	mongoPassword = "k0668466425"
-	dbname        = "test" //"databases"
-	colname       = "Job"
-)
-
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
-//noinspection ALL
-func ConnectMongoDB() (*data.DB, error) {
+func ConnectMongoDB() (*DB, error) {
 	ctx := context.Background()
 	// 認証が必要な場合は、options.Credentialを作成
 	credential := options.Credential{
-		AuthSource: dbname,
-		Username:   mongoUser,
-		Password:   mongoPassword,
+		AuthSource: Dbname,
+		Username:   MongoUser,
+		Password:   MongoPassword,
 	}
 	// 認証情報・接続情報を元にclientを作成
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+mongoDBHost+":"+mongoDBPort).SetAuth(credential))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+MongoDBHost+":"+MongoDBPort).SetAuth(credential))
 	if err != nil {
 		fmt.Println("error from mongo.Connect(ctx,")
 		fmt.Println(err)
 		return nil, err
 	}
-	//return &DB{client}, nil
-	return &data.DB{client}, nil
+	return &DB{client}, nil
 }
 
-func (db *data.DB) readMongo(user_iput ...string) []data.JsonJob {
+func (db *DB) readMongo(user_iput ...string) []JsonJob {
 	log.Println("readMongo: user input is ", user_iput)
 	// get table(=collection)
-	collection := db.client.Database(dbname).Collection(colname)
+	collection := db.Client.Database(Dbname).Collection(Colname)
 
 	findOptions := options.Find()
 	// Sort by `price` field descending
@@ -92,7 +78,6 @@ func (db *data.DB) readMongo(user_iput ...string) []data.JsonJob {
 		return nil
 	}
 
-	//log.Println("user_iput[0]", user_iput[0])
 	if len(user_iput) > 0 {
 		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
 		if err != nil {
@@ -101,8 +86,8 @@ func (db *data.DB) readMongo(user_iput ...string) []data.JsonJob {
 		}
 	}
 
-	var jobs []data.JsonJob
-	var doc data.JsonJob //こっちに移動した
+	var jobs []JsonJob
+	var doc JsonJob
 	for cur.Next(context.Background()) {
 		//var doc JsonJob
 		err := cur.Decode(&doc)
@@ -117,5 +102,58 @@ func (db *data.DB) readMongo(user_iput ...string) []data.JsonJob {
 	return jobs
 }
 
+func (mongoClient *DB) GetURL(URL string) {
+	doc, err := goquery.NewDocument(URL)
+	if err != nil {
+		return
+	}
 
-*/
+	var urls []string
+	var companies []string
+	var titles []string
+	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
+		url, _ := s.Attr("href")
+		title := s.Text()
+
+		if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") {
+			urls = append(urls, url)
+			titles = append(titles, title)
+
+		} else if strings.Contains(url, "/company/") {
+			//get company name
+			company := s.Text()
+			companies = append(companies, company)
+		}
+	})
+	job := &Job{
+		Title:   titles,
+		URL:     urls,
+		Company: companies,
+	}
+	//fmt.Println("all titles:",job.Title)
+	//fmt.Println("all comapnies:",job.Company)
+	//fmt.Println("all urls:",job.URL)
+
+	// Unmarshal結果の格納先である構造体のポインターを取得
+	jsonJob := new(JsonJob)
+	//create json
+	var i int
+	currentTime := time.Now()
+	for i = 0; i < len(job.Company); i++ {
+		jsonJob.URL = job.URL[i]
+		jsonJob.Title = job.Title[i]
+		jsonJob.Company = job.Company[i]
+		jsonJob.DateAdded = currentTime.Format("2006-01-02")
+
+		// 構造体をJSON文字列に変換
+		jsonJobJSON, err := json.Marshal(jsonJob)
+		if err != nil {
+			fmt.Println("error from json.Marshal(jsonJob)")
+			fmt.Println(err)
+			return
+		}
+
+		// Insert JSON data to MongoDB
+		mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+	} //end of for loop of each array
+}

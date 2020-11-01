@@ -1,6 +1,5 @@
-package data
+package controllers
 
-/*
 import "go.mongodb.org/mongo-driver/mongo"
 
 type Job struct {
@@ -27,5 +26,28 @@ type DB struct {
 	Client *mongo.Client
 }
 
+const (
+	// 接続先のDB情報を入力
+	MongoDBHost   = "127.0.0.1"
+	MongoDBPort   = "27017"
+	MongoUser     = "Ken"
+	MongoPassword = "k0668466425"
+	Dbname        = "test" //"databases"
+	Colname       = "Job"
+	ColnameUser   = "User"
+)
 
-*/
+type User struct {
+	//Capital letter means public
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type JWT struct {
+	Token string `json:"token"`
+}
+
+type Error struct {
+	Message string `json:"message"`
+}

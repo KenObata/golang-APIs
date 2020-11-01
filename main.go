@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Scraping/app/controllers"
 	_ "Scraping/app/controllers"
 	"context"
 	"encoding/json"
@@ -9,19 +10,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
-	"time"
+
 	_ "time"
 
-	"github.com/PuerkitoBio/goquery"
 	"go.mongodb.org/mongo-driver/bson"
 	_ "go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+/*
 type Job struct {
-	//ID string
 	URL     []string
 	Title   []string
 	Company []string
@@ -32,44 +29,19 @@ type JsonJob struct {
 	Company   string `json:"company"`
 	DateAdded string `json:"dateadded"`
 }
-
-type User struct {
-	//Capital letter means public
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type JWT struct {
-	Token string `json:"token"`
-}
-
-type Error struct {
-	Message string `json:"message"`
-}
-
 // Array for Job struct
 type Jobs []*Job
-
-//this month use for mongo find filtering
-//var thisYear string = time.RFC3339[0:8]
-
-const (
-	// 接続先のDB情報を入力
-	mongoDBHost   = "127.0.0.1"
-	mongoDBPort   = "27017"
-	mongoUser     = "Ken"
-	mongoPassword = "k0668466425"
-	dbname        = "test" //"databases"
-	colname       = "Job"
-	colnameUser   = "User"
-)
 
 // mongo-driverのクライアントを自前で定義した構造体DBへセット
 type DB struct {
 	client *mongo.Client
 }
+*/
 
+//this month use for mongo find filtering
+//var thisYear string = time.RFC3339[0:8]
+
+/*
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	//http.ServeFile(w,r,"index.html")
 	mongoClient, err := ConnectMongoDB()
@@ -98,15 +70,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, job_struct)
 	}
 }
-
-func errorInResponse(w http.ResponseWriter, status int, error Error) {
+*/
+func errorInResponse(w http.ResponseWriter, status int, error controllers.Error) {
 	w.WriteHeader(status) // HTTP status code such as 400, 500
 	json.NewEncoder(w).Encode(error)
 	return
 }
 
 func signUpHandler(w http.ResponseWriter, r *http.Request) {
-	var user User
+	var user controllers.User
 	//var error Error
 
 	// Working Directory
@@ -118,10 +90,10 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 
 	//we ganna insert into User collection (use later)
-	mongoClient, _ := ConnectMongoDB()
+	mongoClient, _ := controllers.ConnectMongoDB()
 
 	//get ID by number of users + 1
-	collection := mongoClient.client.Database(dbname).Collection(colnameUser)
+	collection := mongoClient.Client.Database(controllers.Dbname).Collection(controllers.ColnameUser)
 	cur, err := collection.Find(context.Background(), bson.D{})
 	numOfUsers := 0
 	for cur.Next(context.Background()) {
@@ -162,17 +134,17 @@ func signUpHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	mongoClient.InsertMongoDB(userJSON, colnameUser)
+	mongoClient.InsertMongoDB(userJSON, controllers.ColnameUser)
 }
 
 func ticker() {
-	t := time.NewTicker(24 * time.Hour) //24 Hour周期の ticker
-	defer t.Stop()
+	//t := time.NewTicker(24 * time.Hour) //24 Hour周期の ticker
+	//defer t.Stop()
 
 	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 
 	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
-	mongoClient, err := ConnectMongoDB() //mongoClient is a pointer of address to DB.
+	mongoClient, err := controllers.ConnectMongoDB() //mongoClient is a pointer of address to DB.
 	fmt.Println("my mongoClient:", mongoClient)
 	if err != nil {
 		fmt.Println("Error from ConnectMongoDB()!")
@@ -180,7 +152,7 @@ func ticker() {
 		os.Exit(1)
 	}
 	// web crawl　and store into mongo
-	mongoClient.getURL(url)
+	mongoClient.GetURL(url)
 }
 
 func main() {
@@ -189,51 +161,14 @@ func main() {
 	server := http.Server{
 		Addr: "127.0.0.1:8080",
 	}
-	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/", controllers.HomeHandler)
 	http.HandleFunc("/signup", signUpHandler)
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
 }
 
-func (db *DB) readMongo(user_iput ...string) []JsonJob {
-	//log.Println("readMongo: user input is ", user_iput)
-	// get table(=collection)
-	collection := db.client.Database(dbname).Collection(colname)
-
-	findOptions := options.Find()
-	// Sort by `price` field descending
-	findOptions.SetSort(bson.D{{"dateadded", -1}})
-
-	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
-	if err != nil {
-		return nil
-	}
-
-	if len(user_iput) > 0 {
-		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
-		if err != nil {
-			log.Println("err from user input:", err)
-			return nil
-		}
-	}
-
-	var jobs []JsonJob
-	var doc JsonJob
-	for cur.Next(context.Background()) {
-		//var doc JsonJob
-		err := cur.Decode(&doc)
-		if err != nil {
-			fmt.Println("error at cur.Decode(&doc)")
-			return nil
-		}
-		//append to jobs
-		jobs = append(jobs, doc)
-		//log.Println("searched company:", doc.Company)
-	}
-	return jobs
-}
-
+/*
 func (mongoClient *DB) getURL(URL string) {
 	doc, err := goquery.NewDocument(URL)
 	if err != nil {
@@ -286,10 +221,11 @@ func (mongoClient *DB) getURL(URL string) {
 		}
 
 		// Insert JSON data to MongoDB
-		mongoClient.InsertMongoDB(jsonJobJSON, colname)
+		mongoClient.(controllers.InsertMongoDB(jsonJobJSON, colname))
 	} //end of for loop of each array
 }
-
+*/
+/*
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
 func ConnectMongoDB() (*DB, error) {
 	ctx := context.Background()
@@ -308,7 +244,8 @@ func ConnectMongoDB() (*DB, error) {
 	}
 	return &DB{client}, nil
 }
-
+*/
+/*
 // DB構造体へInsert用のメソッドを定義
 // JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
 func (db *DB) InsertMongoDB(json []byte, table_name string) {
@@ -349,3 +286,44 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 		return
 	}
 }
+*/
+
+/*
+func (db *DB) readMongo(user_iput ...string) []JsonJob {
+	//log.Println("readMongo: user input is ", user_iput)
+	// get table(=collection)
+	collection := db.client.Database(dbname).Collection(colname)
+
+	findOptions := options.Find()
+	// Sort by `price` field descending
+	findOptions.SetSort(bson.D{{"dateadded", -1}})
+
+	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
+	if err != nil {
+		return nil
+	}
+
+	if len(user_iput) > 0 {
+		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
+		if err != nil {
+			log.Println("err from user input:", err)
+			return nil
+		}
+	}
+
+	var jobs []JsonJob
+	var doc JsonJob
+	for cur.Next(context.Background()) {
+		//var doc JsonJob
+		err := cur.Decode(&doc)
+		if err != nil {
+			fmt.Println("error at cur.Decode(&doc)")
+			return nil
+		}
+		//append to jobs
+		jobs = append(jobs, doc)
+		//log.Println("searched company:", doc.Company)
+	}
+	return jobs
+}
+*/
