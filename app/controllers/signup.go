@@ -19,7 +19,6 @@ func errorInResponse(w http.ResponseWriter, status int, error Error) {
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
-	//var error Error
 
 	// Working Directory
 	wd, err := os.Getwd()
@@ -30,6 +29,7 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 
 	//we ganna insert into User collection (use later)
+	var error Error
 	mongoClient, _ := ConnectMongoDB()
 
 	//get ID by number of users + 1
@@ -45,23 +45,18 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		log.Println("email:", email)
 		user.Email = email
+	} else {
+		errorInResponse(w, http.StatusBadRequest, error)
+		return
 	}
 	password := r.FormValue("password")
 	if password != "" && len(password) > 3 {
 		user.Password = password
+	} else {
+		errorInResponse(w, http.StatusBadRequest, error)
+		return
 	}
 	json.NewDecoder(r.Body).Decode(&user)
-	/*
-		if user.Email == "" {
-			errorInResponse(w, http.StatusBadRequest, error)
-			return
-		}
-		if user.Password == "" {
-			errorInResponse(w, http.StatusBadRequest, error)
-			return
-		}
-
-	*/
 
 	//hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	//if err != nil {
