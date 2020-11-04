@@ -39,6 +39,7 @@ func main() {
 	http.HandleFunc("/", controllers.HomeHandler)
 	http.HandleFunc("/signup", controllers.SignUpHandler)
 	http.HandleFunc("/login", controllers.LoginHandler)
+	http.HandleFunc("/internal", controllers.InternalHandler)
 	http.HandleFunc("/userpost", controllers.PostHandler) //debug
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")

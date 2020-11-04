@@ -12,26 +12,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-
-	// Working Directory
-	wd, err := os.Getwd()
-	t, err := template.ParseFiles(wd + "/app/view/login.html")
-	if err != nil {
-		log.Println(err)
-	}
-	t.Execute(w, nil)
-
+func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	//get user niput first
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-
-	//we ganna check if User exists in MongoDB
-	//var error Error //temporarily comment out
+	//debug
+	log.Println("input email in InternalHandler:", email)
 
 	mongoClient, _ := ConnectMongoDB()
 	collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
-	cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
+	cur, _ := collection.Find(context.Background(), bson.M{"email": email, "password": password})
 
 	if cur == nil {
 		//if cur.Next(context.Background()) {
@@ -42,14 +32,48 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		//http Redirect
 		target := "https://" + r.Host + "/userpost"
+		log.Println("http redirect to ", target)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
+}
 
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Working Directory
+	wd, err := os.Getwd()
+	t, err := template.ParseFiles(wd + "/app/view/login.html")
+	if err != nil {
+		log.Println(err)
+	}
+	t.Execute(w, nil)
+
+	/*
+		//get user niput first
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+
+		//we ganna check if User exists in MongoDB
+		//var error Error //temporarily comment out
+
+		mongoClient, _ := ConnectMongoDB()
+		collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
+		cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
+
+		if cur == nil {
+			//if cur.Next(context.Background()) {
+			var error Error
+			errorInResponse(w, http.StatusBadRequest, error)
+			log.Println("Login failed.")
+			return
+		} else {
+			//http Redirect
+			//target := "https://" + r.Host + "/userpost"
+			//http.Redirect(w, r, target, http.StatusFound)
+		}
+	*/
 }
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	//target := "https://" + r.Host + "/userpost"
-	//http.Redirect(w, r, target, http.StatusFound)
 
 	// Working Directory
 	wd, err := os.Getwd()
