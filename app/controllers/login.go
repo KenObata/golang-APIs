@@ -18,12 +18,13 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	//debug
 	log.Println("input email in InternalHandler:", email)
-
+	log.Println("input PW in InternalHandler:", password)
 	mongoClient, _ := ConnectMongoDB()
 	collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
 	cur, _ := collection.Find(context.Background(), bson.M{"email": email, "password": password})
 
-	if cur == nil {
+	log.Println("cur.Current:", cur.Current)
+	if cur.Current == nil {
 		//if cur.Next(context.Background()) {
 		var error Error
 		errorInResponse(w, http.StatusBadRequest, error)
@@ -31,7 +32,7 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		//http Redirect
-		target := "https://" + r.Host + "/userpost"
+		target := "http://" + r.Host + "/userpost"
 		log.Println("http redirect to ", target)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
