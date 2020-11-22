@@ -4,7 +4,6 @@ import (
 	"Scraping/app/controllers"
 	_ "Scraping/app/controllers"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	_ "time"
@@ -48,14 +47,16 @@ func main() {
 	// web crawl　and store into mongo
 	mongoClient.GetURL(url)
 
-	//server := http.Server{}
+	server := http.Server{} //if you use kubectl
 	//Addr: "127.0.0.1:8080",
 	//}
 	//for docker-compose
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	/*
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080"
+		}
+	*/
 	http.HandleFunc("/", controllers.HomeHandler)
 	http.HandleFunc("/signup", controllers.SignUpHandler)
 	http.HandleFunc("/login", controllers.LoginHandler)
@@ -63,11 +64,12 @@ func main() {
 	http.HandleFunc("/userpost", controllers.PostHandler) //debug
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
-	//server.ListenAndServe()
+	server.ListenAndServe()
 
 	//for docker-compose
-	log.Println("** Service Started on Port " + port + " **")
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
-	}
+	/*
+		log.Println("** Service Started on Port " + port + " **")
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Fatal(err)
+		}*/
 }

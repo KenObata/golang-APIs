@@ -41,7 +41,13 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Working Directory
-	wd, err := os.Getwd() //need to switch to without wd when we work with ECS
+	/*
+		wd := os.Getenv("WORKINGDIRECTLY")
+		if wd == "" {
+			wd,_ = os.Getwd()
+		}*/
+	wd, err := os.Getwd() //need to switch to without wd when we work with EKS
+	log.Println("LoginHandler called. wd := ", wd)
 	t, err := template.ParseFiles(wd + "/app/view/login.html")
 	if err != nil {
 		log.Println(err)

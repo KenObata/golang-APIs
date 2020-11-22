@@ -1,6 +1,8 @@
 package controllers
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type Job struct {
 	//ID string
@@ -26,6 +28,14 @@ type DB struct {
 	Client *mongo.Client
 }
 
+/*tempMongoDBHost := os.Getenv("MONGO_SERVER")
+if tempMongoDBHost != ""{
+	const MongoDBHost = tempMongoDBHost
+} else{
+	const MongoDBHost   = "127.0.0.1"
+}
+
+*/
 const (
 	// 接続先のDB情報を入力
 	MongoDBHost   = "127.0.0.1" //mongodb.default.svc.cluster.local.

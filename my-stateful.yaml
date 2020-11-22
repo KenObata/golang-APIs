@@ -6,18 +6,18 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: builder
+      app: mongo
   serviceName: stateful
   template:
     metadata:
       labels:
-        app: builder
+        app: mongo
     spec:
       containers:
         - image: mongo:latest
           name: mongo
           volumeMounts:
-            - name: data
+            - name: pv-gp2-claim #needs to match with metadata-name
               mountPath: /data
   volumeClaimTemplates: #this is persistent volume claim.
     - metadata:
@@ -25,7 +25,6 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        volumeMode: Filesystem
         resources:
           requests:
             storage: 1Gi

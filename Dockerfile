@@ -2,7 +2,8 @@ FROM golang:latest as builder
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
-ENV PORT 8080
+ENV PORT=8080
+ENV MONGO_SERVER=host.docker.internal
 WORKDIR /
 COPY . .
 RUN go build main.go

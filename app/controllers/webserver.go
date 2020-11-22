@@ -54,7 +54,13 @@ func ConnectMongoDB() (*DB, error) {
 		Password:   MongoPassword,
 	}
 	// 認証情報・接続情報を元にclientを作成
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+MongoDBHost+":"+MongoDBPort).SetAuth(credential))
+	var host string
+	if os.Getenv("MONGO_SERVER") == "" {
+		host = MongoDBHost
+	} else {
+		host = os.Getenv("MONGO_SERVER")
+	}
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+MongoDBPort).SetAuth(credential))
 	if err != nil {
 		fmt.Println("error from mongo.Connect(ctx,")
 		fmt.Println(err)
@@ -64,8 +70,10 @@ func ConnectMongoDB() (*DB, error) {
 }
 
 func (mongoClient *DB) GetURL(URL string) {
+	log.Println("GetURL function is called from main.")
 	doc, err := goquery.NewDocument(URL)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -111,6 +119,7 @@ func (mongoClient *DB) GetURL(URL string) {
 			return
 		}
 
+		log.Println("In GetURL function. jsonJobJSON: ", jsonJobJSON)
 		// Insert JSON data to MongoDB
 		mongoClient.InsertMongoDB(jsonJobJSON, Colname)
 	} //end of for loop of each array
