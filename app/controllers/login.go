@@ -41,7 +41,7 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Working Directory
-	wd, err := os.Getwd()
+	wd, err := os.Getwd() //need to switch to without wd when we work with ECS
 	t, err := template.ParseFiles(wd + "/app/view/login.html")
 	if err != nil {
 		log.Println(err)

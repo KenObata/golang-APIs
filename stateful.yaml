@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: stateful
+  serviceName: stateful
+  template:
+    metadata:
+      labels:
+        app: stateful
+    spec:
+      containers:
+        - image: alpine
+          name: stateful
+          command: ["sh", "-c"]
+          args:
+            - |
+              trap 'exit' SIGTERM
+              touch /data/hostname
+              while true; do
+                echo "`date`: `hostname`" >> /data/hostname
+                sleep 1
+              done
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 64Mi

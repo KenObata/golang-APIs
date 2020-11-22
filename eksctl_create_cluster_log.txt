@@ -1,0 +1,67 @@
+(base) MacPro:Scraping kenobata$ eksctl create cluster
+[ℹ]  eksctl version 0.30.0
+[ℹ]  using region ap-northeast-1
+[ℹ]  setting availability zones to [ap-northeast-1a ap-northeast-1c ap-northeast-1d]
+[ℹ]  subnets for ap-northeast-1a - public:192.168.0.0/19 private:192.168.96.0/19
+[ℹ]  subnets for ap-northeast-1c - public:192.168.32.0/19 private:192.168.128.0/19
+[ℹ]  subnets for ap-northeast-1d - public:192.168.64.0/19 private:192.168.160.0/19
+[ℹ]  nodegroup "ng-7eb867ac" will use "ami-0aa15614ef924fd1e" [AmazonLinux2/1.17]
+[ℹ]  using Kubernetes version 1.17
+[ℹ]  creating EKS cluster "wonderful-unicorn-1605149598" in "ap-northeast-1" region with un-managed nodes
+[ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
+[ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=ap-northeast-1 --cluster=wonderful-unicorn-1605149598'
+[ℹ]  CloudWatch logging will not be enabled for cluster "wonderful-unicorn-1605149598" in "ap-northeast-1"
+[ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=ap-northeast-1 --cluster=wonderful-unicorn-1605149598'
+[ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "wonderful-unicorn-1605149598" in "ap-northeast-1"
+[ℹ]  2 sequential tasks: { create cluster control plane "wonderful-unicorn-1605149598", 2 sequential sub-tasks: { no tasks, create nodegroup "ng-7eb867ac" } }
+[ℹ]  building cluster stack "eksctl-wonderful-unicorn-1605149598-cluster"
+[ℹ]  deploying stack "eksctl-wonderful-unicorn-1605149598-cluster"
+[ℹ]  building nodegroup stack "eksctl-wonderful-unicorn-1605149598-nodegroup-ng-7eb867ac"
+[ℹ]  --nodes-min=2 was set automatically for nodegroup ng-7eb867ac
+[ℹ]  --nodes-max=2 was set automatically for nodegroup ng-7eb867ac
+[ℹ]  deploying stack "eksctl-wonderful-unicorn-1605149598-nodegroup-ng-7eb867ac"
+[ℹ]  waiting for the control plane availability...
+[✔]  saved kubeconfig as "/Users/kenobata/.kube/config"
+[ℹ]  no tasks
+[✔]  all EKS cluster resources for "wonderful-unicorn-1605149598" have been created
+[ℹ]  adding identity "arn:aws:iam::740959772378:role/eksctl-wonderful-unicorn-16051495-NodeInstanceRole-VH5GBNOGXNKU" to auth ConfigMap
+[ℹ]  nodegroup "ng-7eb867ac" has 0 node(s)
+[ℹ]  waiting for at least 2 node(s) to become ready in "ng-7eb867ac"
+[ℹ]  nodegroup "ng-7eb867ac" has 2 node(s)
+[ℹ]  node "ip-192-168-16-232.ap-northeast-1.compute.internal" is ready
+[ℹ]  node "ip-192-168-80-142.ap-northeast-1.compute.internal" is ready
+[ℹ]  kubectl command should work with "/Users/kenobata/.kube/config", try 'kubectl get nodes'
+[✔]  EKS cluster "wonderful-unicorn-1605149598" in "ap-northeast-1" region is ready(base) MacPro:Scraping kenobata$ eksctl create cluster
+                                                                                   [ℹ]  eksctl version 0.30.0
+                                                                                   [ℹ]  using region ap-northeast-1
+                                                                                   [ℹ]  setting availability zones to [ap-northeast-1a ap-northeast-1c ap-northeast-1d]
+                                                                                   [ℹ]  subnets for ap-northeast-1a - public:192.168.0.0/19 private:192.168.96.0/19
+                                                                                   [ℹ]  subnets for ap-northeast-1c - public:192.168.32.0/19 private:192.168.128.0/19
+                                                                                   [ℹ]  subnets for ap-northeast-1d - public:192.168.64.0/19 private:192.168.160.0/19
+                                                                                   [ℹ]  nodegroup "ng-7eb867ac" will use "ami-0aa15614ef924fd1e" [AmazonLinux2/1.17]
+                                                                                   [ℹ]  using Kubernetes version 1.17
+                                                                                   [ℹ]  creating EKS cluster "wonderful-unicorn-1605149598" in "ap-northeast-1" region with un-managed nodes
+                                                                                   [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial nodegroup
+                                                                                   [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=ap-northeast-1 --cluster=wonderful-unicorn-1605149598'
+                                                                                   [ℹ]  CloudWatch logging will not be enabled for cluster "wonderful-unicorn-1605149598" in "ap-northeast-1"
+                                                                                   [ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=ap-northeast-1 --cluster=wonderful-unicorn-1605149598'
+                                                                                   [ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "wonderful-unicorn-1605149598" in "ap-northeast-1"
+                                                                                   [ℹ]  2 sequential tasks: { create cluster control plane "wonderful-unicorn-1605149598", 2 sequential sub-tasks: { no tasks, create nodegroup "ng-7eb867ac" } }
+                                                                                   [ℹ]  building cluster stack "eksctl-wonderful-unicorn-1605149598-cluster"
+                                                                                   [ℹ]  deploying stack "eksctl-wonderful-unicorn-1605149598-cluster"
+                                                                                   [ℹ]  building nodegroup stack "eksctl-wonderful-unicorn-1605149598-nodegroup-ng-7eb867ac"
+                                                                                   [ℹ]  --nodes-min=2 was set automatically for nodegroup ng-7eb867ac
+                                                                                   [ℹ]  --nodes-max=2 was set automatically for nodegroup ng-7eb867ac
+                                                                                   [ℹ]  deploying stack "eksctl-wonderful-unicorn-1605149598-nodegroup-ng-7eb867ac"
+                                                                                   [ℹ]  waiting for the control plane availability...
+                                                                                   [✔]  saved kubeconfig as "/Users/kenobata/.kube/config"
+                                                                                   [ℹ]  no tasks
+                                                                                   [✔]  all EKS cluster resources for "wonderful-unicorn-1605149598" have been created
+                                                                                   [ℹ]  adding identity "arn:aws:iam::740959772378:role/eksctl-wonderful-unicorn-16051495-NodeInstanceRole-VH5GBNOGXNKU" to auth ConfigMap
+                                                                                   [ℹ]  nodegroup "ng-7eb867ac" has 0 node(s)
+                                                                                   [ℹ]  waiting for at least 2 node(s) to become ready in "ng-7eb867ac"
+                                                                                   [ℹ]  nodegroup "ng-7eb867ac" has 2 node(s)
+                                                                                   [ℹ]  node "ip-192-168-16-232.ap-northeast-1.compute.internal" is ready
+                                                                                   [ℹ]  node "ip-192-168-80-142.ap-northeast-1.compute.internal" is ready
+                                                                                   [ℹ]  kubectl command should work with "/Users/kenobata/.kube/config", try 'kubectl get nodes'
+                                                                                   [✔]  EKS cluster "wonderful-unicorn-1605149598" in "ap-northeast-1" region is ready

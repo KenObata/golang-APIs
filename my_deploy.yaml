@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: builder
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: builder
+  template:
+    metadata:
+      labels:
+        app: builder
+    spec:
+      containers:
+        - name: builder
+          image: kenobata/golang-scraping:latest # is this right?
+          ports:
+            - containerPort: 80

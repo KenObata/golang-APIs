@@ -2,6 +2,7 @@ FROM golang:latest as builder
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
+ENV PORT 8080
 WORKDIR /
 COPY . .
 RUN go build main.go

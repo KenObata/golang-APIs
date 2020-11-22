@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: builder
+  serviceName: stateful
+  template:
+    metadata:
+      labels:
+        app: builder
+    spec:
+      containers:
+        - image: mongo:latest
+          name: mongo
+          volumeMounts:
+            - name: data
+              mountPath: /data
+  volumeClaimTemplates: #this is persistent volume claim.
+    - metadata:
+        name: pv-gp2-claim #this is ganna be a .yaml name of pod!
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: gp2

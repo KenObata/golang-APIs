@@ -23,6 +23,8 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/signup.html")
+	//path := os.Getenv(myPath) //create ENV in Dockerfile when we deploy to kubernetes.
+	//t, err := template.ParseFiles("/app/view/signup.html")
 	if err != nil {
 		log.Println(err)
 	}

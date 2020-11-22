@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goapp
+spec:
+  containers:
+    - name: goapp #unique name among a pod.
+      image: kenobata/golang-scraping:latest
+      imagePullPolicy: Always
+      command: []
+      args: [] #ex)["nginx", "-g", "daemon off;"] gives=>master process nginx -g daemon off;
+      env:
+        - name: HOGEHOGE
+          value: fugafuga
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      workingDir: /tmp
+
+      #docker pull kenobata/golang-scraping:latest

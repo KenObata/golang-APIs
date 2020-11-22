@@ -28,7 +28,7 @@ type DB struct {
 
 const (
 	// 接続先のDB情報を入力
-	MongoDBHost   = "127.0.0.1"
+	MongoDBHost   = "127.0.0.1" //mongodb.default.svc.cluster.local.
 	MongoDBPort   = "27017"
 	MongoUser     = "Ken"
 	MongoPassword = "k0668466425"
