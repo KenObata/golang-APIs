@@ -20,19 +20,23 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	// JSONのバイトスライスをMongoDBのドキュメント型であるbsonへマップ
 	err := bson.UnmarshalExtJSON([]byte(json), false, &bsonMap)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	// Insert先のコレクション名からクライアント作成
 	collection := db.Client.Database(Dbname).Collection(table_name) //colname is the parameter for table_name
-	fmt.Println("bsonMap:", bsonMap)
-	//fmt.Println("ctx:", ctx)
 
 	if table_name == Colname {
-		readOne, _ := collection.Find(context.Background(), bson.D{{"url", bsonMap["url"]}})
-		if readOne != nil {
-			fmt.Println("there already exists:", bsonMap["company"])
+		readOne, _ := collection.Find(context.Background(), bson.M{"url": bsonMap["url"]})
+		var episodesFiltered []bson.M
+		if err = readOne.All(ctx, &episodesFiltered); err != nil {
+			log.Fatal(err)
+		}
+		if len(episodesFiltered) > 0 {
+			log.Println("there already exists:", bsonMap["company"])
 			return
+		} else {
+			log.Println(bsonMap["company"], "is inserted.")
 		}
 	}
 

@@ -119,7 +119,7 @@ func (mongoClient *DB) GetURL(URL string) {
 			return
 		}
 
-		log.Println("In GetURL function. jsonJobJSON: ", jsonJobJSON)
+		log.Println("In GetURL function. jsonJob: ", jsonJob)
 		// Insert JSON data to MongoDB
 		mongoClient.InsertMongoDB(jsonJobJSON, Colname)
 	} //end of for loop of each array

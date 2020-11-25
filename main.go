@@ -48,6 +48,9 @@ func main() {
 	mongoClient.GetURL(url)
 
 	server := http.Server{} //if you use kubectl
+	if os.Getenv("MONGO_SERVER") == "" {
+		server = http.Server{Addr: "127.0.0.1:3000"}
+	}
 	//Addr: "127.0.0.1:8080",
 	//}
 	//for docker-compose
