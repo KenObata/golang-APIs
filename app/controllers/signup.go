@@ -21,17 +21,21 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	var user User
 
 	// Working Directory
-	wd, err := os.Getwd()
+	wd, err1 := os.Getwd()
+	if err1 != nil {
+		log.Println(err1)
+		log.Println("wd")
+		log.Println("Error from SignUpHandler. (err1)")
+	}
 	t, err := template.ParseFiles(wd + "/app/view/signup.html")
-	//path := os.Getenv(myPath) //create ENV in Dockerfile when we deploy to kubernetes.
-	//t, err := template.ParseFiles("/app/view/signup.html")
 	if err != nil {
 		log.Println(err)
+		log.Println("Error from SignUpHandler. (err)")
 	}
 	t.Execute(w, nil)
 
 	//we ganna insert into User collection (use later)
-	var error Error
+	//var error Error
 	mongoClient, _ := ConnectMongoDB()
 
 	//get ID by number of users + 1
@@ -48,23 +52,19 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("email:", email)
 		user.Email = email
 	} else {
-		errorInResponse(w, http.StatusBadRequest, error)
+		//errorInResponse(w, http.StatusBadRequest, error)
+		log.Println("signup page called without input, return.")
 		return
 	}
 	password := r.FormValue("password")
 	if password != "" && len(password) > 3 {
 		user.Password = password
 	} else {
-		errorInResponse(w, http.StatusBadRequest, error)
+		//errorInResponse(w, http.StatusBadRequest, error)
+		log.Println("signup page called without input, return.")
 		return
 	}
 	json.NewDecoder(r.Body).Decode(&user)
-
-	//hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//user.Password = string(hash)
 
 	userJSON, err := json.Marshal(user)
 	log.Println("email:", user.Email, "password:", user.Password)

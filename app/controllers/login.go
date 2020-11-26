@@ -21,11 +21,13 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("input PW in InternalHandler:", password)
 	mongoClient, _ := ConnectMongoDB()
 	collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
-	cur, _ := collection.Find(context.Background(), bson.M{"email": email, "password": password})
-
+	cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
+	var episodesFiltered []bson.M
+	if err = cur.All(context.Background(), &episodesFiltered); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("cur.Current:", cur.Current)
-	if cur.Current == nil {
-		//if cur.Next(context.Background()) {
+	if len(episodesFiltered) == 0 {
 		var error Error
 		errorInResponse(w, http.StatusBadRequest, error)
 		log.Println("Login failed.")
@@ -36,10 +38,18 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("http redirect to ", target)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
+	/*
+		if cur.Current == nil {
+			//if cur.Next(context.Background()) {
+			var error Error
+			errorInResponse(w, http.StatusBadRequest, error)
+			log.Println("Login failed.")
+			return
+		}*/
+
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-
 	// Working Directory
 	/*
 		wd := os.Getenv("WORKINGDIRECTLY")

@@ -13,6 +13,7 @@ import (
 // DB構造体へInsert用のメソッドを定義
 // JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
 func (db *DB) InsertMongoDB(json []byte, table_name string) {
+	log.Println("InsertMongoDB is called.")
 	// 3秒でタイムアウトするコンテキストを作成
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -61,10 +62,10 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 	collection := db.Client.Database(Dbname).Collection(Colname)
 
 	findOptions := options.Find()
-	// Sort by `price` field descending
+	// Sort by `date` field descending
 	findOptions.SetSort(bson.D{{"dateadded", -1}})
 
-	cur, err := collection.Find(context.Background(), bson.D{}, findOptions)
+	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}}, findOptions)
 	if err != nil {
 		return nil
 	}

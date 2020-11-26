@@ -71,7 +71,12 @@ func ConnectMongoDB() (*DB, error) {
 
 func (mongoClient *DB) GetURL(URL string) {
 	log.Println("GetURL function is called from main.")
-	doc, err := goquery.NewDocument(URL)
+	// Load the URL
+	res, e := http.Get(URL)
+	if e != nil {
+		return
+	}
+	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Println(err)
 		return
@@ -114,8 +119,8 @@ func (mongoClient *DB) GetURL(URL string) {
 		// 構造体をJSON文字列に変換
 		jsonJobJSON, err := json.Marshal(jsonJob)
 		if err != nil {
-			fmt.Println("error from json.Marshal(jsonJob)")
-			fmt.Println(err)
+			log.Println("error from json.Marshal(jsonJob)")
+			log.Println(err)
 			return
 		}
 
