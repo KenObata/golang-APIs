@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -12,7 +13,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -60,6 +60,7 @@ func ConnectMongoDB() (*DB, error) {
 	} else {
 		host = os.Getenv("MONGO_SERVER")
 	}
+	log.Println("host:", host)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+MongoDBPort).SetAuth(credential))
 	if err != nil {
 		fmt.Println("error from mongo.Connect(ctx,")
@@ -71,32 +72,46 @@ func ConnectMongoDB() (*DB, error) {
 
 func (mongoClient *DB) GetURL(URL string) {
 	log.Println("GetURL function is called from main.")
+	log.Println("URL:", URL)
 	// Load the URL
 	res, e := http.Get(URL)
+	res_byte, _ := ioutil.ReadAll(res.Body)
+	log.Println("res_byte:", string(res_byte))
 	if e != nil {
-		return
-	}
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Println(err)
+		log.Println("Error from http.Get(URL)")
+		log.Fatal(e)
 		return
 	}
 
+	defer res.Body.Close()
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Println("Error from goquery.NewDocumentFromReader.")
+		log.Fatal(err)
+		return
+	}
+	//dummy := doc.Find("a")
+	log.Println("dummy.text:", doc.Text())
+
+	log.Println("doc.Find(\"a\").Length():", doc.Find("a").Length())
 	var urls []string
 	var companies []string
 	var titles []string
 	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
+		//log.Println(s.Text())
 		url, _ := s.Attr("href")
 		title := s.Text()
 
 		if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") {
 			urls = append(urls, url)
 			titles = append(titles, title)
-
+			//log.Println("Inside of doc.Find(), titles name:", titles)
 		} else if strings.Contains(url, "/company/") {
 			//get company name
 			company := s.Text()
+			//log.Println("Inside of doc.Find(), company name:", company)
 			companies = append(companies, company)
+			//log.Println("companies:", companies)
 		}
 	})
 	job := &Job{
@@ -104,13 +119,14 @@ func (mongoClient *DB) GetURL(URL string) {
 		URL:     urls,
 		Company: companies,
 	}
-
+	log.Println("len(companies):", len(companies))
 	// Unmarshal結果の格納先である構造体のポインターを取得
 	jsonJob := new(JsonJob)
 	//create json
 	var i int
 	currentTime := time.Now()
-	for i = 0; i < len(job.Company); i++ {
+	log.Println("len(job.Company):", len(job.Company))
+	for i = 0; i < len(companies); i++ {
 		jsonJob.URL = job.URL[i]
 		jsonJob.Title = job.Title[i]
 		jsonJob.Company = job.Company[i]
@@ -123,9 +139,8 @@ func (mongoClient *DB) GetURL(URL string) {
 			log.Println(err)
 			return
 		}
-
-		log.Println("In GetURL function. jsonJob: ", jsonJob)
 		// Insert JSON data to MongoDB
 		mongoClient.InsertMongoDB(jsonJobJSON, Colname)
 	} //end of for loop of each array
+	log.Println("End of for loop to insert jsonJobJSON.")
 }

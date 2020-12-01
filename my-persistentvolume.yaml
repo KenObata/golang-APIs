@@ -5,7 +5,7 @@ metadata:
 spec:
   capacity:
     storage: 1Gi
-  volumeMode: Filesystem
+  volumeMode: Filesystem #Do we need to use Block insetead? -> Not now.
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Delete
@@ -13,6 +13,6 @@ spec:
 
   awsElasticBlockStore:
     fsType: "ext4"
-    volumeID: "vol-03f01829463f36a2b" #this is from aws ec2 create-volume xxx
+    volumeID: "vol-0d2710b6f146ba975" #this is from aws ec2 create-volume xxx
   #this is a kubernetes volume. We need a AWS volume first.
 

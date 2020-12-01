@@ -4,6 +4,7 @@ import (
 	"Scraping/app/controllers"
 	_ "Scraping/app/controllers"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	_ "time"
@@ -33,7 +34,7 @@ func ticker() {
 
 func main() {
 	//ticker()
-
+	log.Println("os.Getenv:", os.Getenv("MONGO_SERVER"))
 	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 
 	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
@@ -51,6 +52,7 @@ func main() {
 	if os.Getenv("MONGO_SERVER") == "" {
 		server = http.Server{Addr: "127.0.0.1:3000"}
 	}
+
 	//Addr: "127.0.0.1:8080",
 	//}
 	//for docker-compose
