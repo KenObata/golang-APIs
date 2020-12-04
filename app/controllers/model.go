@@ -27,7 +27,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	}
 	// Insert先のコレクション名からクライアント作成
 	collection := db.Client.Database(Dbname).Collection(table_name) //colname is the parameter for table_name
-	log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
+	//log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
 	if table_name == Colname { //table_name==Job
 		var episodesFiltered []bson.M
 		readOne, err1 := collection.Find(context.Background(), bson.M{"url": bsonMap["url"]})

@@ -73,16 +73,19 @@ func ConnectMongoDB() (*DB, error) {
 func (mongoClient *DB) GetURL(URL string) {
 	log.Println("GetURL function is called from main.")
 	log.Println("URL:", URL)
+
+	//debugging
+	testResponse, _ := http.Get(URL)
+	res_byte, _ := ioutil.ReadAll(testResponse.Body)
+	log.Println("res_byte:", string(res_byte))
+
 	// Load the URL
 	res, e := http.Get(URL)
-	res_byte, _ := ioutil.ReadAll(res.Body)
-	log.Println("res_byte:", string(res_byte))
 	if e != nil {
 		log.Println("Error from http.Get(URL)")
 		log.Fatal(e)
 		return
 	}
-
 	defer res.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
@@ -90,10 +93,8 @@ func (mongoClient *DB) GetURL(URL string) {
 		log.Fatal(err)
 		return
 	}
-	//dummy := doc.Find("a")
-	log.Println("dummy.text:", doc.Text())
-
-	log.Println("doc.Find(\"a\").Length():", doc.Find("a").Length())
+	//log.Println("dummy.text:", doc.Text())
+	//log.Println("doc.Find(\"a\").Length():", doc.Find("a").Length())
 	var urls []string
 	var companies []string
 	var titles []string
@@ -119,13 +120,12 @@ func (mongoClient *DB) GetURL(URL string) {
 		URL:     urls,
 		Company: companies,
 	}
-	log.Println("len(companies):", len(companies))
 	// Unmarshal結果の格納先である構造体のポインターを取得
 	jsonJob := new(JsonJob)
 	//create json
 	var i int
 	currentTime := time.Now()
-	log.Println("len(job.Company):", len(job.Company))
+	//log.Println("len(job.Company):", len(job.Company))
 	for i = 0; i < len(companies); i++ {
 		jsonJob.URL = job.URL[i]
 		jsonJob.Title = job.Title[i]
