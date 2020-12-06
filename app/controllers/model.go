@@ -14,8 +14,8 @@ import (
 // JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
 func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	log.Println("InsertMongoDB is called.")
-	// 3秒でタイムアウトするコンテキストを作成
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Second)
+	// 60秒でタイムアウトするコンテキストを作成
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	bsonMap := bson.M{}
 	// JSONのバイトスライスをMongoDBのドキュメント型であるbsonへマップ
@@ -26,24 +26,23 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 		return
 	}
 	// Insert先のコレクション名からクライアント作成
-	collection := db.Client.Database(Dbname).Collection(table_name) //colname is the parameter for table_name
+	collection := db.Client.Database(Dbname).Collection(table_name)
 	//log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
 	if table_name == Colname { //table_name==Job
-		var episodesFiltered []bson.M
-		readOne, err1 := collection.Find(context.Background(), bson.M{"url": bsonMap["url"]})
-		if err1 != nil {
+		var episodesFiltered JsonJob
+		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}} //bsonMap["url"]
+		err := collection.FindOne(context.Background(), filter).Decode(&episodesFiltered)
+		if err != nil {
 			log.Println("Error from collection.Find.")
-			log.Fatal(err1)
+			log.Println(err)
 		}
-		if err = readOne.All(context.Background(), &episodesFiltered); err != nil {
-			log.Println("Erorr from readOne.All(ctx, &episodesFiltered)")
-			log.Fatal(err)
-		}
-		if len(episodesFiltered) > 0 {
+
+		log.Println("episodesFiltered:", episodesFiltered)
+		if len(episodesFiltered.Company) > 0 {
 			log.Println("there already exists:", bsonMap["company"])
 			return
 		} else {
-			log.Println(bsonMap["company"], "is inserted.")
+			log.Println(bsonMap["company"], "will be inserted.")
 		}
 	}
 

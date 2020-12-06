@@ -25,16 +25,6 @@ func main() {
 	}
 	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 	mongoClient.GetURL(url)
-	t := time.NewTicker(2 * time.Hour)
-	for {
-		select {
-		case <-t.C:
-			// every t hour, run get URL function.
-			// web crawl　and store into mongo
-			mongoClient.GetURL(url)
-		}
-	}
-	t.Stop()
 
 	server := http.Server{} //if you use kubectl
 	if os.Getenv("MONGO_SERVER") == "" {
@@ -55,11 +45,21 @@ func main() {
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
-
 	//for docker-compose
 	/*
 		log.Println("** Service Started on Port " + port + " **")
 		if err := http.ListenAndServe(":"+port, nil); err != nil {
 			log.Fatal(err)
 		}*/
+
+	t := time.NewTicker(2 * time.Hour)
+	for {
+		select {
+		case <-t.C:
+			// every t hour, run get URL function.
+			// web crawl　and store into mongo
+			mongoClient.GetURL(url)
+		}
+	}
+	t.Stop()
 }
