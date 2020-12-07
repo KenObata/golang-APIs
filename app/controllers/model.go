@@ -33,11 +33,11 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}} //bsonMap["url"]
 		err := collection.FindOne(context.Background(), filter).Decode(&episodesFiltered)
 		if err != nil {
-			log.Println("Error from collection.Find.")
-			log.Println(err)
+			//log.Println("Error from collection.Find.")
+			//log.Println(err)
 		}
 
-		log.Println("episodesFiltered:", episodesFiltered)
+		//log.Println("episodesFiltered:", episodesFiltered)
 		if len(episodesFiltered.Company) > 0 {
 			log.Println("there already exists:", bsonMap["company"])
 			return
@@ -47,9 +47,11 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	}
 
 	if table_name == ColnameUser {
+		var result User
 		readOne, _ := collection.Find(context.Background(), bson.D{{"email", bsonMap["email"]}})
-		if readOne != nil {
-			//This user is already registered.
+		readOne.Decode(&result)
+		if len(result.Email) > 0 {
+			log.Println("This user is already registered.")
 			return
 		}
 	}

@@ -17,7 +17,7 @@ spec:
         - image: mongo:latest
           name: mongo
           volumeMounts:
-            - name: pv-gp2-claim #needs to match with metadata-name
+            - name: pv-gp2-claim #needs to match with metadata-name of volumeClaimTemplates
               mountPath: /data
   volumeClaimTemplates: #this is persistent volume claim.
     - metadata:

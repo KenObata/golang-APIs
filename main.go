@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 	_ "time"
 
 	_ "go.mongodb.org/mongo-driver/bson"
@@ -23,20 +22,17 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	url := "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
-	mongoClient.GetURL(url)
+	//https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada
+	//https://www.glassdoor.ca/Job/canada-software-engineer-internship-jobs-SRCH_IL.0,6_IN3_KO7,35.htm
+	//url := "https://www.viatec.ca/jobs?current_page=1&sort_type=featured_recent&filter%5Bcategory%5D%5B%5D=Technology&display_type=default"
+	//mongoClient.GetURL(url)
 
-	server := http.Server{} //if you use kubectl
-	if os.Getenv("MONGO_SERVER") == "" {
-		server.Addr = "127.0.0.1:3000"
-	}
-	//for docker-compose
-	/*
-		port := os.Getenv("PORT")
-		if port == "" {
-			port = "8080"
-		}
-	*/
+	server := http.Server{Addr: ":8080"} //if you use kubectl
+	//if os.Getenv("MONGO_SERVER") == "" {
+	//server.
+	//}
+	mongoClient.DoMongoImport()
+
 	http.HandleFunc("/", controllers.HomeHandler)
 	http.HandleFunc("/signup", controllers.SignUpHandler)
 	http.HandleFunc("/login", controllers.LoginHandler)
@@ -45,21 +41,16 @@ func main() {
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
-	//for docker-compose
 	/*
-		log.Println("** Service Started on Port " + port + " **")
-		if err := http.ListenAndServe(":"+port, nil); err != nil {
-			log.Fatal(err)
-		}*/
-
-	t := time.NewTicker(2 * time.Hour)
-	for {
-		select {
-		case <-t.C:
-			// every t hour, run get URL function.
-			// web crawl　and store into mongo
-			mongoClient.GetURL(url)
+		t := time.NewTicker(2 * time.Hour)
+		for {
+			select {
+			case <-t.C:
+				// every t hour, run get URL function.
+				// web crawl　and store into mongo
+				mongoClient.GetURL(url)
+			}
 		}
-	}
-	t.Stop()
+		t.Stop()*/
+
 }

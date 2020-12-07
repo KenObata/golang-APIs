@@ -3,13 +3,15 @@ version: '3'
 services:
   web:
     build: .
+    volumes:
+      - .:/scraping #->.json path is /scraping/app/events.json
     ports:
       - "8080:8080"
     depends_on:
       - mongodb
     tty: true
     environment:
-      - MONGO_SERVER=host.docker.internal
+      - MONGO_SERVER=mongodb   #NOT host.docker.internal
   mongodb:
     image: mongo
     container_name: mongodb
@@ -18,3 +20,7 @@ services:
 volumes:
   mongodata:
     driver: local
+
+networks:
+  shared-network:
+    external: true

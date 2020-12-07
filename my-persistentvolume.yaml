@@ -13,6 +13,7 @@ spec:
 
   awsElasticBlockStore:
     fsType: "ext4"
-    volumeID: "vol-09284cb9e541559e2" #this is from aws ec2 create-volume xxx
+    volumeID:
+    #"vol-01d01a7abb17f2172" #this is from aws ec2 create-volume xxx
   #this is a kubernetes volume. We need a AWS volume first.
 
