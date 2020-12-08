@@ -8,7 +8,7 @@ metadata:
 nodeGroups:
   - name: ng-1
     instanceType: m5.large #try t2.medium
-    desiredCapacity: 2
+    desiredCapacity: 1
 
   #if you want to add second node group.
   #- name: ng-2

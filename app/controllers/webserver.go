@@ -200,19 +200,25 @@ func (mongoClient *DB) GetURL(URL string) {
 	log.Println("End of for loop to insert jsonJobJSON.")
 }
 
-func (mongoClient *DB) DoMongoImport() {
+func (db *DB) DoMongoImport() {
 	log.Println("DoMongoImport called.")
 	wd, _ := os.Getwd()
-	//t, err := template.ParseFiles(wd + "/app/view/index.html")
-	docsPath, _ := filepath.Abs(wd + "/app/events.json")
-	log.Println("docsPath:", docsPath)
-	byteValues, _ := ioutil.ReadFile(docsPath)
-	log.Println("byteValues:", string(byteValues))
-	var user User
-	err := json.Unmarshal(byteValues, &user)
+	docsPath, _ := filepath.Abs(wd + "/app/Job1.json")
+	byteValues, err1 := ioutil.ReadFile(docsPath)
+	if err1 != nil {
+		fmt.Println(err1.Error())
+		os.Exit(1)
+	}
+	var mongoExport []MongoExportJobs
+	err := json.Unmarshal(byteValues, &mongoExport)
 	if err != nil {
 		log.Println("error from unmarshal!")
 		log.Println(err)
 	}
-	log.Println("user", user.Email)
+	for _, data := range mongoExport {
+		log.Println(data.Company)
+		jsonJobJSON, _ := json.Marshal(data)
+		db.InsertMongoDB(jsonJobJSON, Colname)
+	}
+
 }

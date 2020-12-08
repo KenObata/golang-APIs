@@ -17,6 +17,14 @@ type JsonJob struct {
 	DateAdded string `json:"dateadded"`
 }
 
+type MongoExportJobs struct {
+	//ID        string `json:"id"`
+	URL       string `json:"url"`
+	Title     string `json:"title"`
+	Company   string `json:"company"`
+	DateAdded string `json:"dateadded"`
+}
+
 // Array for Job struct
 type Jobs []*Job
 
