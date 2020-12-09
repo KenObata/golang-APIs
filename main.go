@@ -22,15 +22,18 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	//https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada
-	//https://www.glassdoor.ca/Job/canada-software-engineer-internship-jobs-SRCH_IL.0,6_IN3_KO7,35.htm
+	var url [2]string
+	url[0] = "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
+	url[1] = "https://www.glassdoor.ca/Job/canada-software-engineer-internship-jobs-SRCH_IL.0,6_IN3_KO7,35.htm"
+
+	//
 	//url := "https://www.viatec.ca/jobs?current_page=1&sort_type=featured_recent&filter%5Bcategory%5D%5B%5D=Technology&display_type=default"
 	//mongoClient.GetURL(url)
 
-	server := http.Server{Addr: ":8080"} //if you use kubectl
-	//if os.Getenv("MONGO_SERVER") == "" {
-	//server.
-	//}
+	server := http.Server{} //if you use kubectl
+	if os.Getenv("MONGO_SERVER") == "" {
+		server.Addr = ":8080"
+	}
 	mongoClient.DoMongoImport()
 
 	http.HandleFunc("/", controllers.HomeHandler)
@@ -41,6 +44,10 @@ func main() {
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 	server.ListenAndServe()
+	for i := range url {
+		mongoClient.GetURL(url[i])
+	}
+
 	/*
 		t := time.NewTicker(2 * time.Hour)
 		for {

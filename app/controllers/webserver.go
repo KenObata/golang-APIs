@@ -203,7 +203,7 @@ func (mongoClient *DB) GetURL(URL string) {
 func (db *DB) DoMongoImport() {
 	log.Println("DoMongoImport called.")
 	wd, _ := os.Getwd()
-	docsPath, _ := filepath.Abs(wd + "/app/Job1.json")
+	docsPath, _ := filepath.Abs(wd + "/app/Job.json")
 	byteValues, err1 := ioutil.ReadFile(docsPath)
 	if err1 != nil {
 		fmt.Println(err1.Error())
