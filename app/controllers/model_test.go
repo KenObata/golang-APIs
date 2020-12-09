@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -35,6 +36,9 @@ func TestInsertMongoDB(t *testing.T) {
 }
 
 func TestReadMongoDB(t *testing.T) {
+	log.Println(os.Hostname())
+	log.Println(os.Getwd())
+	log.Println(os.Getenv("MONGO_SERVER"))
 	mongoClient, _ := ConnectMongoDB()
 	//create expected result
 	collection := mongoClient.Client.Database(Dbname).Collection(Colname)
