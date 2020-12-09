@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"testing"
 	"time"
 
@@ -37,13 +38,17 @@ func TestReadMongoDB(t *testing.T) {
 	mongoClient, _ := ConnectMongoDB()
 	//create expected result
 	collection := mongoClient.Client.Database(Dbname).Collection(Colname)
-	expect_result, _ := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}})
+	expect_result, err1 := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}})
+	if err1 != nil {
+		log.Println("error from collection.Find().")
+	}
 	var jobs []JsonJob
 	var doc JsonJob
 	for expect_result.Next(context.Background()) {
 		//var doc JsonJob
 		err := expect_result.Decode(&doc)
 		if err != nil {
+			log.Println("error from expect_result.Decode(&doc).")
 			return
 		}
 		jobs = append(jobs, doc)

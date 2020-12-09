@@ -74,6 +74,7 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 
 	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}}, findOptions)
 	if err != nil {
+		log.Println("err from collection.Find()")
 		return nil
 	}
 
@@ -91,12 +92,11 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 		//var doc JsonJob
 		err := cur.Decode(&doc)
 		if err != nil {
-			fmt.Println("error at cur.Decode(&doc)")
+			log.Println("error at cur.Decode(&doc)")
 			return nil
 		}
 		//append to jobs
 		jobs = append(jobs, doc)
-		//log.Println("searched company:", doc.Company)
 	}
 	return jobs
 }
