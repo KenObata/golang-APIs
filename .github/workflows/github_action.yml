@@ -21,10 +21,10 @@ jobs:
       - name: Check running containers
         run: docker-compose ps
       - name: Check mongodb connection step1
-          run: docker-compose exec mongodb mongo
+        run: docker-compose exec mongodb mongo
       - name: Check mongodb connection step2
-          run: db.getMongo()
+        run: db.getMongo()
       - name: Check mongodb connection step3
-          run: exit
+        run: exit
       - name: test
         run: go test -race -v ./...
