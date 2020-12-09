@@ -12,7 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      name: mongodb
       image: mongo
     steps:
       - uses: actions/checkout@v2
@@ -22,5 +21,5 @@ jobs:
     
       - name: Test
         env:
-          MONGO_SERVER: mongodb
+          MONGO_SERVER: mongo
         run: go test -v ./...
