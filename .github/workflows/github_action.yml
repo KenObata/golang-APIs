@@ -11,15 +11,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: mongo
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
         with:
           go-version: 1.15
-      
-      - name: Test
-        env:
-          MONGO_SERVER: mongo
-        run: go test -v ./...
+      - name: Build the docker-compose stack
+        run: docker-compose up --build -d
+      - name: Check running containers
+        run: docker-compose ps
+      - name: Run test suite
+      run: docker exec web go test app
