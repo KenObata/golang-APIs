@@ -39,12 +39,17 @@ func TestReadMongoDB(t *testing.T) {
 	log.Println(os.Hostname())
 	log.Println(os.Getwd())
 	log.Println(os.Getenv("MONGO_SERVER"))
-	mongoClient, _ := ConnectMongoDB()
+	mongoClient, err0 := ConnectMongoDB()
+	if err0 != nil {
+		log.Println("error from ConnectMongoDB")
+		log.Println(err0)
+	}
 	//create expected result
 	collection := mongoClient.Client.Database(Dbname).Collection(Colname)
 	expect_result, err1 := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}})
 	if err1 != nil {
 		log.Println("error from collection.Find().")
+		log.Println(err1)
 	}
 	var jobs []JsonJob
 	var doc JsonJob
