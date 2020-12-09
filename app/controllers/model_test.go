@@ -38,7 +38,7 @@ func TestInsertMongoDB(t *testing.T) {
 func TestReadMongoDB(t *testing.T) {
 	log.Println(os.Hostname())
 	log.Println(os.Getwd())
-	log.Println(os.Getenv("MONGO_SERVER"))
+	log.Println("os.Getenv:", os.Getenv("MONGO_SERVER"))
 	mongoClient, err0 := ConnectMongoDB()
 	if err0 != nil {
 		log.Println("error from ConnectMongoDB")
