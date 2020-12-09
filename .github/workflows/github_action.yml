@@ -20,3 +20,5 @@ jobs:
         run: docker-compose up --build -d
       - name: Check running containers
         run: docker-compose ps
+      - name: test
+        run: go test -race -v ./...

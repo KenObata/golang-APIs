@@ -20,7 +20,3 @@ services:
 volumes:
   mongodata:
     driver: local
-
-networks:
-  shared-network:
-    external: true
