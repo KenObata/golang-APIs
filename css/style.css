@@ -1,11 +1,17 @@
 @import url("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css");
 
 table {
-    width: 100%;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
 }
-
+container{
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-bottom: 10px;
+}
 th {
-    height: 70px;
+    height: 40px;
     background-color: yellowgreen;
 }
 
@@ -90,4 +96,8 @@ td {
     box-shadow    : 6px 6px 3px #666666;  /* 影の設定 */
     border        : 1px solid #000066;    /* 枠の指定 */
     margin-bottom: 8px;
+}
+
+h2, p {
+    text-align    : center;
 }
