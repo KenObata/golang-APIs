@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 	_ "time"
 
 	_ "go.mongodb.org/mongo-driver/bson"
@@ -44,16 +45,18 @@ func main() {
 		mongoClient.GetURL(url[i])
 	}
 
-	/*
-		t := time.NewTicker(2 * time.Hour)
-		for {
-			select {
-			case <-t.C:
-				// every t hour, run get URL function.
-				// web crawl　and store into mongo
-				mongoClient.GetURL(url)
+	t := time.NewTicker(12 * time.Hour)
+	for {
+		select {
+		case <-t.C:
+			// every t hour, run get URL function.
+			mongoClient.DoMongoImport()
+			//2. web crawl　and store into mongo
+			for i := range url {
+				mongoClient.GetURL(url[i])
 			}
 		}
-		t.Stop()*/
+	}
+	t.Stop()
 
 }
