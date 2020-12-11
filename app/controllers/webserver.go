@@ -120,11 +120,6 @@ func (mongoClient *DB) GetURL(URL string) {
 	log.Println("GetURL function is called from main.")
 	log.Println("URL:", URL)
 
-	//debugging
-	//testResponse, _ := http.Get(URL)
-	//res_byte, _ := ioutil.ReadAll(testResponse.Body)
-	//log.Println("res_byte:", string(res_byte))
-
 	// Load the URL
 	res, e := http.Get(URL)
 	if e != nil {
@@ -139,7 +134,6 @@ func (mongoClient *DB) GetURL(URL string) {
 		log.Fatal(err)
 		return
 	}
-	//log.Println("dummy.text:", doc.Text())
 	var urls []string
 	var companies []string
 	var titles []string
@@ -150,20 +144,23 @@ func (mongoClient *DB) GetURL(URL string) {
 		urls, companies, titles = GetVIATEC(doc)
 	} else {
 		doc.Find("a").Each(func(_ int, s *goquery.Selection) {
-			//log.Println(s.Text())
 			url, _ := s.Attr("href")
 			title := s.Text()
 
-			if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") {
-				urls = append(urls, url)
-				titles = append(titles, title)
-				//log.Println("Inside of doc.Find(), titles name:", titles)
-			} else if strings.Contains(url, "/company/") {
+			if len(companies) < len(titles)-1 {
+				log.Println("something is wrong with:", titles)
+				os.Exit(1)
+			}
+			if strings.Contains(url, "/company/") {
 				//get company name
 				company := s.Text()
-				//log.Println("Inside of doc.Find(), company name:", company)
+				//log.Println("Get URL(), company name:", company)
 				companies = append(companies, company)
-				//log.Println("companies:", companies)
+			} else if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") && len(companies) == len(titles) {
+				urls = append(urls, url)
+				titles = append(titles, title)
+				//log.Println("Get URL(), titles name:", title)
+				//log.Println("Get URL(), url name:", url)
 			}
 		})
 	}
@@ -190,7 +187,7 @@ func (mongoClient *DB) GetURL(URL string) {
 		// 構造体をJSON文字列に変換
 		jsonJobJSON, err := json.Marshal(jsonJob)
 		if err != nil {
-			log.Println("error from json.Marshal(jsonJob)")
+			log.Println("error from json.Marshal(jsonJob)", jsonJobJSON)
 			log.Println(err)
 			return
 		}
