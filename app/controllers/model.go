@@ -13,7 +13,7 @@ import (
 // DB構造体へInsert用のメソッドを定義
 // JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
 func (db *DB) InsertMongoDB(json []byte, table_name string) {
-	//log.Println("InsertMongoDB is called.")
+	log.Println("InsertMongoDB is called.")
 	// 60秒でタイムアウトするコンテキストを作成
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -42,7 +42,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 			//log.Println("there already exists:", bsonMap["company"])
 			return
 		} else {
-			//log.Println(bsonMap["company"], "will be inserted.")
+			log.Println(bsonMap["company"], "will be inserted.")
 		}
 	}
 

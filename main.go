@@ -39,11 +39,12 @@ func main() {
 	http.HandleFunc("/userpost", controllers.PostHandler) //debug
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
-	server.ListenAndServe()
+
 	mongoClient.DoMongoImport()
 	for i := range url {
 		mongoClient.GetURL(url[i])
 	}
+	server.ListenAndServe()
 
 	t := time.NewTicker(12 * time.Hour)
 	for {
