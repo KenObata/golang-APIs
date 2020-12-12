@@ -50,12 +50,7 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	// Working Directory
-	/*
-		wd := os.Getenv("WORKINGDIRECTLY")
-		if wd == "" {
-			wd,_ = os.Getwd()
-		}*/
+
 	wd, err := os.Getwd() //need to switch to without wd when we work with EKS
 	log.Println("LoginHandler called. wd := ", wd)
 	t, err := template.ParseFiles(wd + "/app/view/login.html")
@@ -91,7 +86,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/userpost.html")
@@ -120,9 +114,20 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	currentTime := time.Now()
 	job.DateAdded = currentTime.Format("2006-01-02")
 
-	jsonJobJSON, err := json.Marshal(job)
-	//insert my JSON object into mongoDB
-	mongoClient, _ := ConnectMongoDB()
-	mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+	if companyName != "" && jobTitle != "" && jobURL != "" {
+		jsonJobJSON, err := json.Marshal(job)
+
+		mongoClient, _ := ConnectMongoDB()
+		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+		if err != nil {
+			log.Println("User InsertMongoDB:", err)
+			new_t, _ := template.ParseFiles(wd + "/app/view/userpost-error.html")
+			new_t.Execute(w, err)
+		} else {
+			new_t, _ := template.ParseFiles(wd + "/app/view/userpost-success.html")
+			new_t.Execute(w, nil)
+		}
+
+	}
 
 }

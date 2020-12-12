@@ -21,10 +21,11 @@ func main() {
 	}
 
 	http.HandleFunc("/", controllers.HomeHandler)
+	http.HandleFunc("/index-login-success", controllers.HomeHandlerAfterLogin)
 	http.HandleFunc("/signup", controllers.SignUpHandler)
 	http.HandleFunc("/login", controllers.LoginHandler)
 	http.HandleFunc("/internal", controllers.InternalHandler)
-	http.HandleFunc("/userpost", controllers.PostHandler) //debug
+	http.HandleFunc("/userpost", controllers.PostHandler)
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 

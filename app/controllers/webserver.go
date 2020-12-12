@@ -18,6 +18,32 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
+	mongoClient, err := ConnectMongoDB()
+	if err != nil {
+		fmt.Println("Error from ConnectMongoDB()!")
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	// Working Directory
+	wd, err := os.Getwd()
+	t, err := template.ParseFiles(wd + "/app/view/index-login-success.html")
+	if err != nil {
+		log.Println("Error from template.ParseFiles()!")
+		log.Println(err)
+	}
+
+	name := r.FormValue("name")
+	if name != "" {
+		new_job_struct := mongoClient.ReadMongo(name)
+		t.Execute(w, new_job_struct)
+		time.Sleep(1000)
+	} else {
+		job_struct := mongoClient.ReadMongo()
+		t.Execute(w, job_struct)
+	}
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	mongoClient, err := ConnectMongoDB()
 	if err != nil {

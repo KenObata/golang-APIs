@@ -76,5 +76,8 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		//http.Error(w, err.Error(), 500)
 		new_t, _ := template.ParseFiles(wd + "/app/view/signup-error.html")
 		new_t.Execute(w, err)
+	} else {
+		new_t, _ := template.ParseFiles(wd + "/app/view/signup-success.html")
+		new_t.Execute(w, nil)
 	}
 }

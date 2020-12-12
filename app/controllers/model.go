@@ -29,15 +29,10 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	if table_name == Colname { //table_name==Job
 		var episodesFiltered JsonJob
 		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}}
-		err := collection.FindOne(context.Background(), filter).Decode(&episodesFiltered)
-		if err != nil {
-			//log.Println("Error from collection.Find.")
-			return err
-		}
+		collection.FindOne(context.Background(), filter).Decode(&episodesFiltered) // no error handler because no doc found is also an error.
 
-		//log.Println("episodesFiltered:", episodesFiltered)
 		if len(episodesFiltered.Company) > 0 {
-			//log.Println("there already exists:", bsonMap["company"])
+			fmt.Errorf("there already exists: %s", bsonMap["company"])
 		} else {
 			log.Println(bsonMap["company"], "will be inserted.")
 		}
@@ -51,7 +46,6 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 		readOne.All(context.Background(), &results)
 		log.Println("results:", len(results))
 		if len(results) > 0 {
-			log.Println("This user is already registered.")
 			return fmt.Errorf("%s", "This user is already registered.")
 		}
 	}
