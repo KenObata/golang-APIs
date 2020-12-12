@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -30,7 +29,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 	//log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
 	if table_name == Colname { //table_name==Job
 		var episodesFiltered JsonJob
-		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}} //bsonMap["url"]
+		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}}
 		err := collection.FindOne(context.Background(), filter).Decode(&episodesFiltered)
 		if err != nil {
 			//log.Println("Error from collection.Find.")
@@ -58,7 +57,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 
 	_, err = collection.InsertOne(ctx, bsonMap)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 }
@@ -71,8 +70,10 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 	findOptions := options.Find()
 	// Sort by `date` field descending
 	findOptions.SetSort(bson.D{{"dateadded", -1}})
+	currentTime := time.Now()
+	lastMonth := time.Date(currentTime.Year(), currentTime.Month()-1, currentTime.Day(), 0, 0, 0, 0, time.Local).Format("2006-01-02")
 
-	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}}, findOptions)
+	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", lastMonth}}}}, findOptions)
 	if err != nil {
 		log.Println("err from collection.Find()")
 		return nil
