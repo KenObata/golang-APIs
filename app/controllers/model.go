@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 
@@ -9,22 +10,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// DB構造体へInsert用のメソッドを定義
-// JSONファイルから読み込んだバイトスライスを渡し、MongoDBへInsert
-func (db *DB) InsertMongoDB(json []byte, table_name string) {
+func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	log.Println("InsertMongoDB is called.")
-	// 60秒でタイムアウトするコンテキストを作成
+
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	bsonMap := bson.M{}
-	// JSONのバイトスライスをMongoDBのドキュメント型であるbsonへマップ
+	// Convert json to bson, which is mongodb document.
 	err := bson.UnmarshalExtJSON([]byte(json), false, &bsonMap)
 	if err != nil {
 		log.Println("error from InsertMongo(), bson.UnmarshalExtJSON")
 		log.Println(err)
-		return
+		return err
 	}
-	// Insert先のコレクション名からクライアント作成
+
 	collection := db.Client.Database(Dbname).Collection(table_name)
 	//log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
 	if table_name == Colname { //table_name==Job
@@ -33,13 +32,12 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 		err := collection.FindOne(context.Background(), filter).Decode(&episodesFiltered)
 		if err != nil {
 			//log.Println("Error from collection.Find.")
-			//log.Println(err)
+			return err
 		}
 
 		//log.Println("episodesFiltered:", episodesFiltered)
 		if len(episodesFiltered.Company) > 0 {
 			//log.Println("there already exists:", bsonMap["company"])
-			return
 		} else {
 			log.Println(bsonMap["company"], "will be inserted.")
 		}
@@ -47,19 +45,23 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) {
 
 	if table_name == ColnameUser {
 		var result User
+		var results []User
 		readOne, _ := collection.Find(context.Background(), bson.D{{"email", bsonMap["email"]}})
 		readOne.Decode(&result)
-		if len(result.Email) > 0 {
+		readOne.All(context.Background(), &results)
+		log.Println("results:", len(results))
+		if len(results) > 0 {
 			log.Println("This user is already registered.")
-			return
+			return fmt.Errorf("%s", "This user is already registered.")
 		}
 	}
 
 	_, err = collection.InsertOne(ctx, bsonMap)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
+	return nil
 }
 
 func (db *DB) ReadMongo(user_iput ...string) []JsonJob {

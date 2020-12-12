@@ -35,7 +35,6 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, nil)
 
 	//we ganna insert into User collection (use later)
-	//var error Error
 	mongoClient, _ := ConnectMongoDB()
 
 	//get ID by number of users + 1
@@ -71,5 +70,11 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	mongoClient.InsertMongoDB(userJSON, ColnameUser)
+	err = mongoClient.InsertMongoDB(userJSON, ColnameUser)
+	log.Println("error message from insert user:", err)
+	if err != nil {
+		//http.Error(w, err.Error(), 500)
+		new_t, _ := template.ParseFiles(wd + "/app/view/signup-error.html")
+		new_t.Execute(w, err)
+	}
 }
