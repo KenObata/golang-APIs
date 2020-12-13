@@ -25,14 +25,15 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	}
 
 	collection := db.Client.Database(Dbname).Collection(table_name)
-	//log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
+	log.Println("Mongo DB name:", db.Client.Database(Dbname).Name())
 	if table_name == Colname { //table_name==Job
 		var episodesFiltered JsonJob
 		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}}
 		collection.FindOne(context.Background(), filter).Decode(&episodesFiltered) // no error handler because no doc found is also an error.
 
 		if len(episodesFiltered.Company) > 0 {
-			fmt.Errorf("there already exists: %s", bsonMap["company"])
+			//return fmt.Errorf("there already exists: %s", bsonMap["company"])
+			log.Println("there already exists: %s", bsonMap["company"])
 		} else {
 			log.Println(bsonMap["company"], "will be inserted.")
 		}

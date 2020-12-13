@@ -218,7 +218,10 @@ func (mongoClient *DB) GetURL(URL string) {
 			return
 		}
 		// Insert JSON data to MongoDB
-		mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+		if err != nil {
+			log.Fatal(err)
+		}
 	} //end of for loop of each array
 	log.Println("End of for loop to insert jsonJobJSON.")
 }

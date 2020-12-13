@@ -11,6 +11,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+func Initialization() {
+	//create user in test DB
+	mongoClient, _ := ConnectMongoDB()
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	db := mongoClient.Client.Database(Dbname)
+	err := db.RunCommand(ctx, bson.D{{"createUser", MongoUser},
+		{"pwd", MongoPassword},
+		{"roles", []bson.M{{"role": "readWrite", "db": "test"}}}})
+	if err != nil {
+		panic(err.Err())
+	}
+}
+
 func TestInsertMongoDB(t *testing.T) {
 	mongoClient, _ := ConnectMongoDB()
 	//create test struct JsonJob
