@@ -24,6 +24,14 @@ func init() { //TestMain(m *testing.M)
 	if err != nil {
 		log.Println(err)
 	}
+	err_createCollection_Job := db.CreateCollection(ctx, Colname)
+	if err_createCollection_Job != nil {
+		log.Println(err_createCollection_Job)
+	}
+	err_createCollection_User := db.CreateCollection(ctx, ColnameUser)
+	if err_createCollection_User != nil {
+		log.Println(err_createCollection_User)
+	}
 }
 
 func TestInsertMongoDB(t *testing.T) {
