@@ -33,7 +33,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 
 		if len(episodesFiltered.Company) > 0 {
 			//return fmt.Errorf("there already exists: %s", bsonMap["company"])
-			log.Println("there already exists: %s", bsonMap["company"])
+			log.Println("there already exists: ", bsonMap["company"])
 		} else {
 			log.Println(bsonMap["company"], "will be inserted.")
 		}
