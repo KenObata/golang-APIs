@@ -17,6 +17,8 @@ services:
     container_name: mongodb
     volumes:
       - mongodata
+    ports:
+      - "27017:27017"
 volumes:
   mongodata:
     driver: local

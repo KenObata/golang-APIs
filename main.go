@@ -53,21 +53,21 @@ func ticker() {
 		mongoClient.GetURL(url[i])
 	}
 
-	t := time.NewTicker(7 * time.Second)
+	t := time.NewTicker(10 * time.Hour)
 	for {
 		select {
 		case <-t.C:
 			log.Println("ticker is working.")
-			/*
-				if os.Getenv("MONGO_SERVER") != "" {
-					// this is in kubernetes cluster
-					mongoClient.DoMongoImport()
-				} else { //this is in localhost
-					//web crawl　and store into mongo
-					for i := range url {
-						mongoClient.GetURL(url[i])
-					}
-				}*/
+
+			if os.Getenv("MONGO_SERVER") != "" {
+				// this is in kubernetes cluster
+				mongoClient.DoMongoImport()
+			} else { //this is in localhost
+				//web crawl　and store into mongo
+				for i := range url {
+					mongoClient.GetURL(url[i])
+				}
+			}
 		} //end of one t transaction.
 	} //end of for loop
 	t.Stop()
