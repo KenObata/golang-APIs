@@ -11,7 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func Initialization() {
+func init() { //TestMain(m *testing.M)
+	log.Println("init() called.")
 	//create user in test DB
 	mongoClient, _ := ConnectMongoDB()
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -21,7 +22,7 @@ func Initialization() {
 		{"pwd", MongoPassword},
 		{"roles", []bson.M{{"role": "readWrite", "db": "test"}}}})
 	if err != nil {
-		panic(err.Err())
+		log.Println(err)
 	}
 }
 
