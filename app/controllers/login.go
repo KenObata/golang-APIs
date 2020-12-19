@@ -13,7 +13,7 @@ import (
 )
 
 func InternalHandler(w http.ResponseWriter, r *http.Request) {
-	//get user niput first
+	//get user input first
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 	//debug
@@ -28,10 +28,15 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("cur.Current:", cur.Current)
 	if len(episodesFiltered) == 0 {
-		var error Error
-		errorInResponse(w, http.StatusBadRequest, error)
+		//var error Error
+		//errorInResponse(w, http.StatusBadRequest, error)
 		log.Println("Login failed.")
-		return
+		wd, err := os.Getwd()
+		t, err := template.ParseFiles(wd + "/app/view/login-error.html")
+		if err != nil {
+			log.Println(err)
+		}
+		t.Execute(w, nil)
 	} else {
 		//http Redirect
 		target := "http://" + r.Host + "/userpost"
@@ -50,39 +55,13 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-
-	wd, err := os.Getwd() //need to switch to without wd when we work with EKS
+	wd, err := os.Getwd()
 	log.Println("LoginHandler called. wd := ", wd)
 	t, err := template.ParseFiles(wd + "/app/view/login.html")
 	if err != nil {
 		log.Println(err)
 	}
 	t.Execute(w, nil)
-
-	/*
-		//get user niput first
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-
-		//we ganna check if User exists in MongoDB
-		//var error Error //temporarily comment out
-
-		mongoClient, _ := ConnectMongoDB()
-		collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
-		cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
-
-		if cur == nil {
-			//if cur.Next(context.Background()) {
-			var error Error
-			errorInResponse(w, http.StatusBadRequest, error)
-			log.Println("Login failed.")
-			return
-		} else {
-			//http Redirect
-			//target := "https://" + r.Host + "/userpost"
-			//http.Redirect(w, r, target, http.StatusFound)
-		}
-	*/
 }
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {

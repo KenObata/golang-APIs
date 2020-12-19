@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/signup.css" type="text/css">
+    <title>Login</title>
+</head>
+<body>
+<div class="signup-form">
+    <form action="/internal" method="get">
+        <h2>Welcome! Please Login</h2>
+        <h2>Enter your email address and password.</h2>
+
+        <div class="form-group">
+            <div class="row">
+                <input type="text" class="form-control" name="email" placeholder="Email address" required="required"/>
+                <input type="text" class="form-control" name="password" placeholder="password (at least 4 characters)" required="required"/>
+                <button type="submit" class="btn btn-success btn-lg btn-block">Login</button>
+                <!--button onclick="location.href='./userpost'" type="button">Login</button-->
+            </div>
+        </div>
+        <h2>Sorry, your email or password is wrong!</h2>
+        <h2>Please check your email or password.</h2>
+    </form>
+</div>
+
+</body>
+</html>
