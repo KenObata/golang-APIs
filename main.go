@@ -34,6 +34,7 @@ func main() {
 }
 
 func ticker() {
+	log.Println("ticker() is called.")
 	var url [2]string
 	url[0] = "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 	url[1] = "https://www.glassdoor.ca/Job/canada-software-engineer-internship-jobs-SRCH_IL.0,6_IN3_KO7,35.htm"
@@ -61,7 +62,7 @@ func ticker() {
 
 			if os.Getenv("MONGO_SERVER") != "" {
 				// this is in kubernetes cluster
-				mongoClient.DoMongoImport()
+				//mongoClient.DoMongoImport()
 			} else { //this is in localhost
 				//web crawl　and store into mongo
 				for i := range url {

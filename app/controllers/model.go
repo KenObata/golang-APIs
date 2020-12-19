@@ -77,7 +77,7 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 	}
 
 	if len(user_iput) > 0 {
-		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0]}, findOptions)
+		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0], "dateadded": bson.D{{"$gt", lastMonth}}}, findOptions)
 		if err != nil {
 			log.Println("err from user input:", err)
 			return nil

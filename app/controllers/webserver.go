@@ -242,7 +242,7 @@ func (db *DB) DoMongoImport() {
 		log.Println(err)
 	}
 	for _, data := range mongoExport {
-		//log.Println(data.Company)
+		log.Println(data.Company)
 		jsonJobJSON, _ := json.Marshal(data)
 		db.InsertMongoDB(jsonJobJSON, Colname)
 	}
