@@ -73,6 +73,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
 func ConnectMongoDB() (*DB, error) {
+	log.Println("ConnectMongoDB() is called.")
 	ctx := context.Background()
 	// 認証が必要な場合は、options.Credentialを作成
 	credential := options.Credential{
@@ -80,6 +81,7 @@ func ConnectMongoDB() (*DB, error) {
 		Username:   MongoUser,
 		Password:   MongoPassword,
 	}
+	log.Println("credential.Username:", credential.Username)
 	// 認証情報・接続情報を元にclientを作成
 	var host string
 	if os.Getenv("MONGO_SERVER") == "" {
@@ -88,7 +90,11 @@ func ConnectMongoDB() (*DB, error) {
 		host = os.Getenv("MONGO_SERVER")
 	}
 	log.Println("host:", host)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+MongoDBPort).SetAuth(credential))
+	//debug
+	clientOpts := options.Client().ApplyURI("mongodb://" + host + ":" + MongoDBPort + "/?connect=direct")
+	client, err := mongo.Connect(ctx, clientOpts)
+	//please uncomment later
+	//client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+MongoDBPort).SetAuth(credential))
 	if err != nil {
 		fmt.Println("error from mongo.Connect(ctx,")
 		fmt.Println(err)

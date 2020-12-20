@@ -15,7 +15,7 @@ import (
 func main() {
 	log.Println("os.Getenv:", os.Getenv("MONGO_SERVER"))
 
-	server := http.Server{} //if you use kubectl
+	server := http.Server{}
 	if os.Getenv("MONGO_SERVER") == "" {
 		server.Addr = ":8080"
 	}
@@ -30,7 +30,10 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 
 	go ticker()
-	server.ListenAndServe()
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func ticker() {
