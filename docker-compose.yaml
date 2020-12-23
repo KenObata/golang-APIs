@@ -19,9 +19,6 @@ services:
       - mongodata
     ports:
       - "27016:27017" #local uses port 27016 to port forward.
-    command:
-      - sh
-      - sleep 3600
 volumes:
   mongodata:
     driver: local

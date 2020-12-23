@@ -66,7 +66,7 @@ func TestSignUpHandler(t *testing.T) {
 		log.Fatalf("Failed to navigate:%v", err2)
 	}
 	time.Sleep(1000)
-	//page.Find("signup").Click()
+	page.Find("signup").Click()
 }
 
 /*
