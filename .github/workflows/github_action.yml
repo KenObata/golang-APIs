@@ -17,7 +17,7 @@ jobs:
         with:
           go-version: 1.15
       - name: Build the docker-compose stack
-        run: docker-compose up -d mongodb
+        run: docker-compose up -d #mongodb
       - name: Check running containers
         run: docker-compose ps
       - name: wait for mongodb UP

@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"testing"
+	"time"
 
 	"github.com/sclevine/agouti"
 )
@@ -60,11 +61,12 @@ func TestSignUpHandler(t *testing.T) {
 	}
 
 	//go to index.html
-	err2 := page.Navigate("http://canadianintern.link/")
+	err2 := page.Navigate("http://localhost:8080")
 	if err2 != nil {
 		log.Fatalf("Failed to navigate:%v", err2)
 	}
-	page.Find("signup").Click()
+	time.Sleep(1000)
+	//page.Find("signup").Click()
 }
 
 /*
