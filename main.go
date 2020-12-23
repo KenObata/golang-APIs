@@ -30,7 +30,7 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 
 	go ticker()
-	controllers.Init() //initialize Redis
+	//controllers.Init() //initialize Redis
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Println(err)
