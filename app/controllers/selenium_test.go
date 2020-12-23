@@ -62,7 +62,7 @@ func TestSignUpHandler(t *testing.T) {
 	//go to index.html
 	err2 := page.Navigate("http://canadianintern.link/")
 	if err2 != nil {
-		log.Fatalf("Failed to navigate:%v", err)
+		log.Fatalf("Failed to navigate:%v", err2)
 	}
 	page.Find("signup").Click()
 }
