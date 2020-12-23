@@ -54,14 +54,14 @@ func TestSignUpHandler(t *testing.T) {
 	}
 	defer driver.Stop()
 
-	page, err := driver.NewPage()
-	if err != nil {
+	page, err1 := driver.NewPage()
+	if err1 != nil {
 		log.Fatalf("Failed to open page:%v", err)
 	}
 
 	//go to index.html
-	err = page.Navigate("http://canadianintern.link/")
-	if err != nil {
+	err2 := page.Navigate("http://canadianintern.link/")
+	if err2 != nil {
 		log.Fatalf("Failed to navigate:%v", err)
 	}
 	page.Find("signup").Click()
