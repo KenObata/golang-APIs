@@ -38,20 +38,16 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		t.Execute(w, nil)
 	} else {
+		//create a session by Redis
+		SetKey(episodesFiltered[0])
+		log.Println("episodesFiltered[0]:", episodesFiltered[0])
+		log.Println("episodesFiltered[0][\"id\"]:", episodesFiltered[0]["id"])
+
 		//http Redirect
 		target := "http://" + r.Host + "/userpost"
 		log.Println("http redirect to ", target)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
-	/*
-		if cur.Current == nil {
-			//if cur.Next(context.Background()) {
-			var error Error
-			errorInResponse(w, http.StatusBadRequest, error)
-			log.Println("Login failed.")
-			return
-		}*/
-
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
