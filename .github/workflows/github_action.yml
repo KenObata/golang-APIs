@@ -25,6 +25,6 @@ jobs:
       - name: run build.go
         run: go build .
       - name: run main.go
-        run: go run .
+        run: go run main.go &
       - name: test
         run: go test -race -v ./...
