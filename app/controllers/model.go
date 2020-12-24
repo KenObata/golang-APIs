@@ -6,9 +6,55 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func (db *DB) DeleteDuplicate() error {
+	collection := db.Client.Database(Dbname).Collection(Colname)
+	//first delete test data if exists
+	filter := bson.D{{"company", primitive.Regex{Pattern: "Test", Options: ""}}}
+	result, err := collection.DeleteMany(context.Background(), filter)
+	if result.DeletedCount > 0 {
+		log.Println(result.DeletedCount, " test records were deleted.")
+	}
+	if err != nil {
+		return err
+	}
+
+	//set filter
+	currentTime := time.Now()
+	lastMonth := time.Date(currentTime.Year(), currentTime.Month()-1, currentTime.Day(), 0, 0, 0, 0, time.Local).Format("2006-01-02")
+	findOptions := bson.D{{"dateadded", bson.D{{"$gt", lastMonth}}}}
+
+	//find all, later find duplicate
+	readAll, _ := collection.Find(context.Background(), findOptions)
+	var results []JsonJob
+	readAll.All(context.Background(), &results)
+	for i, result := range results {
+		//delete if duplicate
+		filterDuplicate := bson.D{{"company", result.Company}, {"title", result.Title}}
+		fetchAll, _ := collection.Find(context.Background(), filterDuplicate)
+		var fetchedResults []JsonJob
+		fetchAll.All(context.Background(), &fetchedResults)
+
+		if len(fetchedResults) > 1 {
+			log.Println(i, result.Company, "deleted.")
+			//add date to filterDuplicate to delete exact record.
+			filterDuplicate = bson.D{{"company", result.Company}, {"title", result.Title}, {"dateadded", result.DateAdded}}
+			_, err := collection.DeleteOne(context.Background(), filterDuplicate)
+			if err != nil {
+				log.Println("err from Delete duplicate: ", err)
+			} else {
+				log.Println(result.Company, " is deleted for duplicate.")
+			}
+		}
+	}
+
+	return nil
+}
 
 func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	log.Println("InsertMongoDB is called.")

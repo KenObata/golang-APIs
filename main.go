@@ -57,7 +57,12 @@ func ticker() {
 	for i := range url {
 		mongoClient.GetURL(url[i])
 	}
-
+	//clean up DB
+	err = mongoClient.DeleteDuplicate()
+	if err != nil {
+		log.Println("error from DeleteDuplicate()")
+		log.Println(err)
+	}
 	t := time.NewTicker(10 * time.Hour)
 	for {
 		select {
