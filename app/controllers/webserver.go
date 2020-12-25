@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -235,6 +233,7 @@ func (mongoClient *DB) GetURL(URL string) {
 	log.Println("End of for loop to insert jsonJobJSON.")
 }
 
+/*
 func (db *DB) DoMongoImport() {
 	log.Println("DoMongoImport called.")
 	wd, _ := os.Getwd()
@@ -255,5 +254,5 @@ func (db *DB) DoMongoImport() {
 		jsonJobJSON, _ := json.Marshal(data)
 		db.InsertMongoDB(jsonJobJSON, Colname)
 	}
-
 }
+*/

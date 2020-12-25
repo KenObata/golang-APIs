@@ -51,32 +51,27 @@ func ticker() {
 		os.Exit(1)
 	}
 
-	if os.Getenv("MONGO_SERVER") != "" {
-		mongoClient.DoMongoImport()
-	}
-
 	for i := range url {
 		mongoClient.GetURL(url[i])
 	}
-	//clean up DB
-	err = mongoClient.DeleteDuplicate()
-	if err != nil {
-		log.Println("error from DeleteDuplicate()")
-		log.Println(err)
-	}
+
 	t := time.NewTicker(10 * time.Hour)
 	for {
 		select {
 		case <-t.C:
 			log.Println("ticker is working.")
 
-			if os.Getenv("MONGO_SERVER") != "" {
-				// this is in kubernetes cluster
-				//mongoClient.DoMongoImport()
-			} else { //this is in localhost
+			if os.Getenv("MONGO_SERVER") == "" { //this is in localhost
 				//web crawl　and store into mongo
 				for i := range url {
 					mongoClient.GetURL(url[i])
+				}
+			} else { //on kubernetes cluster
+				//clean up DB
+				err = mongoClient.DeleteDuplicate()
+				if err != nil {
+					log.Println("error from DeleteDuplicate()")
+					log.Println(err)
 				}
 			}
 		} //end of one t transaction.
