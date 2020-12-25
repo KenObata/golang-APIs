@@ -24,6 +24,7 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
 	var episodesFiltered []bson.M
 	if err = cur.All(context.Background(), &episodesFiltered); err != nil {
+		log.Println("error from InternalHandler()")
 		log.Fatal(err)
 	}
 	log.Println("cur.Current:", cur.Current)
@@ -39,9 +40,9 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, nil)
 	} else {
 		//create a session by Redis
-		SetKey(episodesFiltered[0])
+		/*SetKey(episodesFiltered[0])
 		log.Println("episodesFiltered[0]:", episodesFiltered[0])
-		log.Println("episodesFiltered[0][\"id\"]:", episodesFiltered[0]["id"])
+		log.Println("episodesFiltered[0][\"id\"]:", episodesFiltered[0]["id"])*/
 
 		//http Redirect
 		target := "http://" + r.Host + "/userpost"

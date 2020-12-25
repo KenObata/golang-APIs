@@ -84,17 +84,20 @@ func ConnectMongoDB() (*DB, error) {
 	log.Println("credential.Username:", credential.Username)
 	// 認証情報・接続情報を元にclientを作成
 	var host string
+	var port string
 	if os.Getenv("MONGO_SERVER") == "" {
 		host = MongoDBHost
-	} else {
+		port = "27016"
+	} else { // running on kubernetes
 		host = os.Getenv("MONGO_SERVER")
+		port = MongoDBPort
 	}
 	log.Println("host:", host)
 	//debug
-	clientOpts := options.Client().ApplyURI("mongodb://" + host + ":" + MongoDBPort + "/?connect=direct")
-	client, err := mongo.Connect(ctx, clientOpts)
-	//please uncomment later
-	//client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+MongoDBPort).SetAuth(credential))
+	//clientOpts := options.Client().ApplyURI("mongodb://" + host + ":" + MongoDBPort + "/?connect=direct")
+	//client, err := mongo.Connect(ctx, clientOpts)
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+port).SetAuth(credential))
 	if err != nil {
 		fmt.Println("error from mongo.Connect(ctx,")
 		fmt.Println(err)

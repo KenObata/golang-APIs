@@ -3,15 +3,33 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
     <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script-->
 
 </head>
 <body>
+<nav class="navbar navbar-expand-sm sticky-top navbar-dark bg-dark mt-3 mb-3">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav4" aria-controls="navbarNav4" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <!--a class="navbar-brand" href="#">Menu</a-->
+    <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="./about">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="./userpost">Post a Job</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
 
 <div class="container">
-    <h2>Integrated Job Postings for Software Engineer Interns in Canada</h2>
-    <p>This webservice posts open job opportunities in Canada for Software Engineering students.</p>
+    <h1>Integrated Job Postings for Software Engineer Interns in Canada</h1>
+    <h2>This webservice posts open job opportunities in Canada for Software Engineering students.</h2>
     <div class="wrap">
         <div class="search">
             <form action="" method="get">
@@ -19,9 +37,9 @@
             </form>
         </div>
 
-        <div class="login">
+        <!--div class="login">
             <a href="./userpost" class="button">Post a job.</a>
-        </div>
+        </div-->
     </div>
     <table class="table">
         <thead>

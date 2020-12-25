@@ -25,9 +25,11 @@ th, td {
 table, td {
     border-collapse: collapse;
     border: 1px solid #000;
+    font-size: 12px;
 }
 
 thead {
+    text-align: center;
     display: table; /* to take the same width as tr */
     width: calc(100% - 17px);  /*- 17px because of the scrollbar width */
 }
@@ -68,6 +70,7 @@ td {
     float: left;
 }
 
+
 .wrap{
     margin-bottom: 10px;
 }
@@ -98,6 +101,11 @@ td {
     margin-bottom: 8px;
 }
 
-h2, p {
+h1, h2 {
     text-align    : center;
+}
+
+.nav-item{
+    margin-left: 20px;
+    font-size     : 18pt;
 }
