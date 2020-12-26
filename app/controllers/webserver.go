@@ -33,19 +33,22 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 
-	var filter_condition [2]bool = [2]bool{false, false}
+	var filter_condition [3]bool = [3]bool{false, false, false}
 	checkSoftware := r.FormValue("filterSoftware")
-	log.Println("checkSoftware:", checkSoftware)
 	if checkSoftware == "true" {
 		filter_condition[0] = true
+	}
+	checkDataScience := r.FormValue("filterDataScience")
+	if checkDataScience == "true" {
+		filter_condition[1] = true
 	}
 	checkThisWeek := r.FormValue("filterThisWeek")
 	log.Println("checkThisWeek:", checkThisWeek)
 	if checkThisWeek == "true" {
-		filter_condition[1] = true
+		filter_condition[2] = true
 	}
 	//pass filter condition
-	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1])
+	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }
@@ -64,7 +67,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error from template.ParseFiles()!")
 		log.Println(err)
 	}
-	var filter_condition [2]bool = [2]bool{false, false}
+	var filter_condition [3]bool = [3]bool{false, false, false}
 
 	log.Println("filter_condition", filter_condition)
 	name := r.FormValue("name")
@@ -74,14 +77,17 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	if checkSoftware == "true" {
 		filter_condition[0] = true
 	}
-	log.Println("checkSoftware:", filter_condition)
+	checkDataScience := r.FormValue("filterDataScience")
+	if checkDataScience == "true" {
+		filter_condition[1] = true
+	}
 	checkThisWeek := r.FormValue("filterThisWeek")
 	if checkThisWeek == "true" {
-		filter_condition[1] = true
+		filter_condition[2] = true
 	}
 	log.Println("checkThisWeek:", filter_condition)
 	//pass filter condition
-	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1])
+	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }

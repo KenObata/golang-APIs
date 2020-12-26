@@ -109,7 +109,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	return nil
 }
 
-func (db *DB) ReadMongo(user_iput string, checkSoftware bool, checkThisWeek bool) []JsonJob {
+func (db *DB) ReadMongo(user_iput string, checkSoftware bool, checkDataScience bool, checkThisWeek bool) []JsonJob {
 	log.Println("ReadMongo: user filter is ", user_iput)
 	// get table(=collection)
 	collection := db.Client.Database(Dbname).Collection(Colname)
@@ -146,11 +146,14 @@ func (db *DB) ReadMongo(user_iput string, checkSoftware bool, checkThisWeek bool
 			return nil
 		}
 		//condition: software developer only
-		if checkSoftware && !strings.Contains(doc.Title, "Software") {
+		if checkSoftware && !(strings.Contains(doc.Title, "Software") || strings.Contains(doc.Title, "Developer") || strings.Contains(doc.Title, "Engineer")) {
 			toBeAdded = false
 		}
 		//condition: this week only
 		if checkThisWeek && strings.Compare(doc.DateAdded, thisWeek) < 0 {
+			toBeAdded = false
+		}
+		if checkDataScience && !(strings.Contains(doc.Title, "Data") || strings.Contains(doc.Title, "Analytics")) {
 			toBeAdded = false
 		}
 		if toBeAdded {

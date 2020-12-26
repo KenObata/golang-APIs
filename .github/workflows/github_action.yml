@@ -28,3 +28,7 @@ jobs:
         run: go run main.go &
       - name: test
         run: go test -race -v ./...
+      - name: docker build
+        run: docker build -t kenobata/golang-scraping  .
+      - name: dockerhub push
+        run: docker push kenobata/golang-scraping:latest
