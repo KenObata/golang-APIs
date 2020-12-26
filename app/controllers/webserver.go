@@ -32,14 +32,22 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := r.FormValue("name")
-	if name != "" {
-		new_job_struct := mongoClient.ReadMongo(name)
-		t.Execute(w, new_job_struct)
-		time.Sleep(1000)
-	} else {
-		job_struct := mongoClient.ReadMongo()
-		t.Execute(w, job_struct)
+
+	var filter_condition [2]bool = [2]bool{false, false}
+	checkSoftware := r.FormValue("filterSoftware")
+	log.Println("checkSoftware:", checkSoftware)
+	if checkSoftware == "true" {
+		filter_condition[0] = true
 	}
+	checkThisWeek := r.FormValue("filterThisWeek")
+	log.Println("checkThisWeek:", checkThisWeek)
+	if checkThisWeek == "true" {
+		filter_condition[1] = true
+	}
+	//pass filter condition
+	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1])
+	t.Execute(w, new_job_struct)
+	time.Sleep(1000)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,17 +64,26 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error from template.ParseFiles()!")
 		log.Println(err)
 	}
+	var filter_condition [2]bool = [2]bool{false, false}
 
+	log.Println("filter_condition", filter_condition)
 	name := r.FormValue("name")
 	log.Println("Company:", name, "is input.")
-	if name != "" {
-		new_job_struct := mongoClient.ReadMongo(name)
-		t.Execute(w, new_job_struct)
-		time.Sleep(1000) //debug
-	} else {
-		job_struct := mongoClient.ReadMongo()
-		t.Execute(w, job_struct)
+
+	checkSoftware := r.FormValue("filterSoftware")
+	if checkSoftware == "true" {
+		filter_condition[0] = true
 	}
+	log.Println("checkSoftware:", filter_condition)
+	checkThisWeek := r.FormValue("filterThisWeek")
+	if checkThisWeek == "true" {
+		filter_condition[1] = true
+	}
+	log.Println("checkThisWeek:", filter_condition)
+	//pass filter condition
+	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1])
+	t.Execute(w, new_job_struct)
+	time.Sleep(1000)
 }
 
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
@@ -91,9 +108,6 @@ func ConnectMongoDB() (*DB, error) {
 		port = MongoDBPort
 	}
 	log.Println("host:", host)
-	//debug
-	//clientOpts := options.Client().ApplyURI("mongodb://" + host + ":" + MongoDBPort + "/?connect=direct")
-	//client, err := mongo.Connect(ctx, clientOpts)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+port).SetAuth(credential))
 	if err != nil {
@@ -103,28 +117,7 @@ func ConnectMongoDB() (*DB, error) {
 	}
 	return &DB{client}, nil
 }
-func GetVIATEC(doc *goquery.Document) (urls []string, companies []string, titles []string) {
-	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
-		url, _ := s.Attr("href")
-		//log.Println(url)
-		url = "https://www.viatec.ca/" + url
-		title := s.Text()
-		if strings.Contains(url, "/jobs/") && len(companies)-len(titles) == 0 {
-			company := s.Next().Text()
-			companies = append(companies, company)
-			log.Println("Inside of doc.Find(), company name:", company)
-		} else if strings.Contains(url, "jobs") && len(companies)-len(titles) == 1 {
-			title = s.Text()
-			titles = append(titles, title)
-			urls = append(urls, url)
-			//log.Println("Inside of doc.Find(), titles name:", title)
-		}
-	})
-	if len(companies) > len(titles) {
-		companies = companies[:len(companies)-1]
-	}
-	return urls, companies, titles
-}
+
 func GetGlassdoor(doc *goquery.Document) (urls []string, companies []string, titles []string) {
 	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
 		class, _ := s.Attr("class")
@@ -173,8 +166,6 @@ func (mongoClient *DB) GetURL(URL string) {
 
 	if strings.Contains(URL, "glassdoor") {
 		urls, companies, titles = GetGlassdoor(doc)
-	} else if strings.Contains(URL, "viatec") {
-		urls, companies, titles = GetVIATEC(doc)
 	} else {
 		doc.Find("a").Each(func(_ int, s *goquery.Selection) {
 			url, _ := s.Attr("href")

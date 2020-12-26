@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -105,25 +106,24 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	return nil
 }
 
-func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
-	log.Println("ReadMongo: user input is ", user_iput)
+func (db *DB) ReadMongo(user_iput string, checkSoftware bool, checkThisWeek bool) []JsonJob {
+	log.Println("ReadMongo: user filter is ", user_iput)
 	// get table(=collection)
 	collection := db.Client.Database(Dbname).Collection(Colname)
-
 	findOptions := options.Find()
 	// Sort by `date` field descending
 	findOptions.SetSort(bson.D{{"dateadded", -1}})
 	currentTime := time.Now()
 	lastMonth := time.Date(currentTime.Year(), currentTime.Month()-1, currentTime.Day(), 0, 0, 0, 0, time.Local).Format("2006-01-02")
-
+	//first, extract last 1 month records.
 	cur, err := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", lastMonth}}}}, findOptions)
 	if err != nil {
 		log.Println("err from collection.Find()")
 		return nil
 	}
-
+	//filter by company name if any.
 	if len(user_iput) > 0 {
-		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput[0], "dateadded": bson.D{{"$gt", lastMonth}}}, findOptions)
+		cur, err = collection.Find(context.Background(), bson.M{"company": user_iput, "dateadded": bson.D{{"$gt", lastMonth}}}, findOptions)
 		if err != nil {
 			log.Println("err from user input:", err)
 			return nil
@@ -132,6 +132,9 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 
 	var jobs []JsonJob
 	var doc JsonJob
+	var toBeAdded bool = true
+	thisWeek := currentTime.AddDate(0, 0, -7).Format("2006-01-02")
+
 	for cur.Next(context.Background()) {
 		//var doc JsonJob
 		err := cur.Decode(&doc)
@@ -139,8 +142,19 @@ func (db *DB) ReadMongo(user_iput ...string) []JsonJob {
 			log.Println("error at cur.Decode(&doc)")
 			return nil
 		}
-		//append to jobs
-		jobs = append(jobs, doc)
+		//condition: software developer only
+		if checkSoftware && !strings.Contains(doc.Title, "Software") {
+			toBeAdded = false
+		}
+		//condition: this week only
+		if checkThisWeek && strings.Compare(doc.DateAdded, thisWeek) < 0 {
+			toBeAdded = false
+		}
+		if toBeAdded {
+			//append to jobs
+			jobs = append(jobs, doc)
+		}
+		toBeAdded = true //reset the flag.
 	}
 	return jobs
 }
