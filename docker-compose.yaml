@@ -18,7 +18,7 @@ services:
     volumes:
       - mongodata
     ports:
-      - "27016:27017" #local uses port 27016 to port forward.
+      - "27017:27017" #local uses port 27016 to port forward.
 volumes:
   mongodata:
     driver: local
