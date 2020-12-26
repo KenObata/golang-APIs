@@ -20,12 +20,12 @@ func init() { //TestMain(m *testing.M)
 	//crete DB
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + "127.0.0.1" + ":" + MongoDBPort))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error creating NewClient: ", err)
 	}
 	ctx, _ := context.WithTimeout(context.Background(), 60*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("error Connect()", err)
 	}
 	defer client.Disconnect(ctx)
 	db := client.Database(Dbname)

@@ -22,13 +22,13 @@ jobs:
         run: docker-compose ps
       - name: wait for mongodb UP
         run: sleep 5
-      - name: run build.go
-        run: go build .
-      - name: run main.go
-        run: go run main.go &
+      #- name: run build.go
+      #  run: go build .
+      #- name: run main.go
+      #  run: go run main.go &
       - name: test
         run: go test -race -v ./...
-      - name: docker build
-        run: docker build -t kenobata/golang-scraping  .
-      - name: dockerhub push
-        run: docker push kenobata/golang-scraping:latest
+      #- name: docker build
+      #  run: docker build -t kenobata/golang-scraping  .
+      #- name: dockerhub push
+      #  run: docker push kenobata/golang-scraping:latest
