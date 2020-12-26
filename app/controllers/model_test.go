@@ -8,42 +8,45 @@ import (
 	"testing"
 	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+var testClient *mongo.Client
 
 func init() { //TestMain(m *testing.M)
 	log.Println("init() called.")
 
 	//crete DB
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + "127.0.0.1" + ":" + MongoDBPort))
-	if err != nil {
+	testClient, _ = mongo.NewClient(options.Client().ApplyURI("mongodb://" + "127.0.0.1" + ":" + MongoDBPort))
+	/*if err != nil {
 		log.Fatal("error creating NewClient: ", err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 60*time.Second)
-	err = client.Connect(ctx)
+	}*/
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+	err := testClient.Connect(context.Background())
 	if err != nil {
 		log.Fatal("error Connect()", err)
 	}
-	defer client.Disconnect(ctx)
-	db := client.Database(Dbname)
+	defer testClient.Disconnect(ctx)
+	db := testClient.Database(Dbname)
 
 	//create user in test DB
 	err_createUser := db.RunCommand(ctx, bson.D{{"createUser", MongoUser},
 		{"pwd", MongoPassword},
 		{"roles", []bson.M{{"role": "readWrite", "db": "test"}}}})
 	if err_createUser != nil {
-		log.Println(err_createUser)
+		log.Println("error creating user: ", err_createUser)
 	}
 	err_createCollection_Job := db.CreateCollection(ctx, Colname)
 	if err_createCollection_Job != nil {
-		log.Println(err_createCollection_Job)
+		log.Println("error creating a collection Job: ", err_createCollection_Job)
 	}
 	err_createCollection_User := db.CreateCollection(ctx, ColnameUser)
 	if err_createCollection_User != nil {
-		log.Println(err_createCollection_User)
+		log.Println("error creating collection User: ", err_createCollection_User)
 	}
 }
 
