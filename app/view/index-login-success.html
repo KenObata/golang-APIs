@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script-->
-    <!--script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script-->
 
 </head>
 <body>
 <nav class="navbar navbar-expand-sm sticky-top navbar-dark bg-dark mt-3 mb-3">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav4" aria-controls="navbarNav4" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".target" aria-controls="navbarNav4" aria-expanded="false" aria-label="Toggle navigation">
+        <!--span class="navbar-toggler-icon"></span-->
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
     </button>
     <!--a class="navbar-brand" href="#">Menu</a-->
-    <div class="collapse navbar-collapse justify-content-center">
+    <div class="collapse navbar-collapse target justify-content-center">
         <ul class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="./about">About</a>
@@ -22,48 +24,59 @@
             <li class="nav-item">
                 <a class="nav-link" href="./userpost">Post a Job</a>
             </li>
-
         </ul>
     </div>
 </nav>
 
 <div class="container">
-    <h1>Integrated Job Postings for Software Engineer Interns in Canada</h1>
+    <h1>Consolidated Job Postings for Software Engineer Interns in Canada</h1>
     <h2>This webservice posts open job opportunities in Canada for Software Engineering students.</h2>
-    <div class="wrap">
-        <div class="search">
+    <div id="wrapper">
+        <div class="left-column">
             <form action="" method="get">
-                <input type="text" name="name" class="searchTerm" placeholder="Search by company:"/>
+                <input type="checkbox" name="filterSoftware" value="true">Software Developer<br>
+                <input type="checkbox" name="filterThisWeek" value="true">Show only This Week<br>
+                <input type="submit" value="Apply filter">
             </form>
         </div>
+        <div class="right-column">
+            <div class="search">
+                <!--div class="search-company"-->
+                <form action="" method="get">
+                    <input type="text" name="name" class="searchTerm" placeholder="Search by company:"/>
+                </form>
+                <!--/div-->
 
-        <!--div class="login">
-            <a href="./userpost" class="button">Post a job.</a>
-        </div-->
-    </div>
-    <table class="table">
-        <thead>
-        <tr>
-            <!--th>#</th-->
-            <th class="company">Company</th>
-            <!--th>Title</th-->
-            <th class="url">URL</th>
-            <th class="date">Date Added</th>
-        </tr>
-        </thead>
+                <!--div class="search-date"-->
+                <!--/div-->
+            </div>
 
-        <tbody>
-
-            {{range .}}
+            <table class="table">
+                <thead>
                 <tr>
-                    <td class="company">{{.Company}}</td>
-                    <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
-                    <td class="date">{{.DateAdded}}</td>
+                    <!--th>#</th-->
+                    <th class="company">Company</th>
+                    <!--th>Title</th-->
+                    <th class="url">URL</th>
+                    <th class="date">Date Added</th>
                 </tr>
-            {{end}}
-        </tbody>
-    </table>
-</div>
+                </thead>
+
+                <tbody>
+
+                {{range .}}
+                    <tr>
+                        <td class="company">{{.Company}}</td>
+                        <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
+                        <td class="date">{{.DateAdded}}</td>
+                    </tr>
+                {{end}}
+                </tbody>
+            </table>
+
+        </div> <!-- end of right column-->
+    </div><!-- end of wrapper -->
+</div><!-- end of container-->
 
 </body>
 </html>

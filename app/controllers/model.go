@@ -29,9 +29,12 @@ func (db *DB) DeleteDuplicate() error {
 	currentTime := time.Now()
 	lastMonth := time.Date(currentTime.Year(), currentTime.Month()-1, currentTime.Day(), 0, 0, 0, 0, time.Local).Format("2006-01-02")
 	findOptions := bson.D{{"dateadded", bson.D{{"$gt", lastMonth}}}}
+	sortOption := options.Find()
+	// Sort by `date` field ascending
+	sortOption.SetSort(bson.D{{"dateadded", 1}})
 
 	//find all, later find duplicate
-	readAll, _ := collection.Find(context.Background(), findOptions)
+	readAll, _ := collection.Find(context.Background(), findOptions, sortOption)
 	var results []JsonJob
 	readAll.All(context.Background(), &results)
 	for i, result := range results {
