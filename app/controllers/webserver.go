@@ -95,7 +95,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
 func ConnectMongoDB() (*DB, error) {
 	log.Println("ConnectMongoDB() is called.")
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	// 認証が必要な場合は、options.Credentialを作成
 	credential := options.Credential{
 		AuthSource: Dbname,
@@ -148,23 +149,25 @@ func GetGlassdoor(doc *goquery.Document) (urls []string, companies []string, tit
 	return urls, companies, titles
 }
 
-func (mongoClient *DB) GetURL(URL string) {
+func (mongoClient *DB) GetURL(URL string) error {
 	log.Println("GetURL function is called from main.")
 	log.Println("URL:", URL)
+	//set timeout 5 sec
+	_, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
 
 	// Load the URL
 	res, e := http.Get(URL)
 	if e != nil {
 		log.Println("Error from http.Get(URL)")
-		log.Fatal(e)
-		return
+		return e
 	}
 	defer res.Body.Close()
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Println("Error from goquery.NewDocumentFromReader.")
-		log.Fatal(err)
-		return
+		//log.Fatal(err)
+		return err
 	}
 	var urls []string
 	var companies []string
@@ -189,8 +192,6 @@ func (mongoClient *DB) GetURL(URL string) {
 			} else if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") && len(companies) == len(titles) {
 				urls = append(urls, url)
 				titles = append(titles, title)
-				//log.Println("Get URL(), titles name:", title)
-				//log.Println("Get URL(), url name:", url)
 			}
 		})
 	}
@@ -214,20 +215,22 @@ func (mongoClient *DB) GetURL(URL string) {
 		jsonJob.Company = job.Company[i]
 		jsonJob.DateAdded = currentTime.Format("2006-01-02")
 
-		// 構造体をJSON文字列に変換
+		// convert Job struct to JSON by marshal
 		jsonJobJSON, err := json.Marshal(jsonJob)
 		if err != nil {
 			log.Println("error from json.Marshal(jsonJob)", jsonJobJSON)
 			log.Println(err)
-			return
+			return err
 		}
 		// Insert JSON data to MongoDB
 		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
 		if err != nil {
-			log.Fatal(err)
+			//log.Fatal(err)
+			return err
 		}
 	} //end of for loop of each array
 	log.Println("End of for loop to insert jsonJobJSON.")
+	return nil
 }
 
 /*

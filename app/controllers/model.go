@@ -15,11 +15,17 @@ import (
 
 func (db *DB) DeleteDuplicate() error {
 	collection := db.Client.Database(Dbname).Collection(Colname)
+
+	//set timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
+	defer cancel()
 	//first delete test data if exists
 	filter := bson.D{{"company", primitive.Regex{Pattern: "Test", Options: ""}}}
-	result, err := collection.DeleteMany(context.Background(), filter)
-	if result.DeletedCount > 0 {
-		log.Println(result.DeletedCount, " test records were deleted.")
+	result, err := collection.DeleteMany(ctx, filter)
+	if result != nil {
+		if result.DeletedCount > 0 {
+			log.Println(result.DeletedCount, " test records were deleted.")
+		}
 	}
 	if err != nil {
 		return err
@@ -34,21 +40,21 @@ func (db *DB) DeleteDuplicate() error {
 	sortOption.SetSort(bson.D{{"dateadded", 1}})
 
 	//find all, later find duplicate
-	readAll, _ := collection.Find(context.Background(), findOptions, sortOption)
+	readAll, _ := collection.Find(ctx, findOptions, sortOption)
 	var results []JsonJob
-	readAll.All(context.Background(), &results)
+	readAll.All(ctx, &results)
 	for i, result := range results {
 		//delete if duplicate
 		filterDuplicate := bson.D{{"company", result.Company}, {"title", result.Title}}
-		fetchAll, _ := collection.Find(context.Background(), filterDuplicate)
+		fetchAll, _ := collection.Find(ctx, filterDuplicate)
 		var fetchedResults []JsonJob
-		fetchAll.All(context.Background(), &fetchedResults)
+		fetchAll.All(ctx, &fetchedResults)
 
 		if len(fetchedResults) > 1 {
 			log.Println(i, result.Company, "deleted.")
 			//add date to filterDuplicate to delete exact record.
 			filterDuplicate = bson.D{{"company", result.Company}, {"title", result.Title}, {"dateadded", result.DateAdded}}
-			_, err := collection.DeleteOne(context.Background(), filterDuplicate)
+			_, err := collection.DeleteOne(ctx, filterDuplicate)
 			if err != nil {
 				log.Println("err from Delete duplicate: ", err)
 			} else {
@@ -63,7 +69,7 @@ func (db *DB) DeleteDuplicate() error {
 func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	log.Println("InsertMongoDB is called.")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	bsonMap := bson.M{}
 	// Convert json to bson, which is mongodb document.
@@ -79,7 +85,7 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	if table_name == Colname { //table_name==Job
 		var episodesFiltered JsonJob
 		filter := bson.D{{"company", bsonMap["company"]}, {"title", bsonMap["title"]}}
-		collection.FindOne(context.Background(), filter).Decode(&episodesFiltered) // no error handler because no doc found is also an error.
+		collection.FindOne(ctx, filter).Decode(&episodesFiltered) // no error handler because no doc found is also an error.
 
 		if len(episodesFiltered.Company) > 0 {
 			//return fmt.Errorf("there already exists: %s", bsonMap["company"])
@@ -92,9 +98,9 @@ func (db *DB) InsertMongoDB(json []byte, table_name string) error {
 	if table_name == ColnameUser {
 		var result User
 		var results []User
-		readOne, _ := collection.Find(context.Background(), bson.D{{"email", bsonMap["email"]}})
+		readOne, _ := collection.Find(ctx, bson.D{{"email", bsonMap["email"]}})
 		readOne.Decode(&result)
-		readOne.All(context.Background(), &results)
+		readOne.All(ctx, &results)
 		log.Println("results:", len(results))
 		if len(results) > 0 {
 			return fmt.Errorf("%s", "This user is already registered.")

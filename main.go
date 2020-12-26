@@ -9,6 +9,7 @@ import (
 	"time"
 	_ "time"
 
+	"github.com/sony/gobreaker"
 	_ "go.mongodb.org/mongo-driver/bson"
 )
 
@@ -34,8 +35,33 @@ func main() {
 	//controllers.Init() //initialize Redis
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Println(err)
+		log.Fatal("error from ListenAndServe()", err)
 	}
+}
+
+var cb *gobreaker.CircuitBreaker
+
+func init() {
+	var settings gobreaker.Settings
+	settings.Name = "HTTP GET"
+	settings.ReadyToTrip = func(counts gobreaker.Counts) bool {
+		//circuit breaker will trip when 60% of requests failed an dat least 10 requests were made.
+		failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
+		return counts.Requests >= 5 && failureRatio >= 0.6
+	}
+	settings.Timeout = time.Millisecond
+	settings.OnStateChange = func(name string, from gobreaker.State, to gobreaker.State) {
+		if to == gobreaker.StateOpen {
+			log.Println("State Open!")
+		}
+		if from == gobreaker.StateOpen && to == gobreaker.StateHalfOpen {
+			log.Println("Going from Open to Half-Open!")
+		}
+		if from == gobreaker.StateHalfOpen && to == gobreaker.StateClosed {
+			log.Println("Going from Half-Open to Close!")
+		}
+	} //end of settings.OnStateChange
+	cb = gobreaker.NewCircuitBreaker(settings)
 }
 
 func ticker() {
@@ -44,28 +70,39 @@ func ticker() {
 	url[0] = "https://www.linkedin.com/jobs/search/?geoId=101174742&keywords=intern&location=Canada"
 	url[1] = "https://www.glassdoor.ca/Job/canada-software-engineer-internship-jobs-SRCH_IL.0,6_IN3_KO7,35.htm"
 
-	// 1. で定義したMongoDBクライアント作成関数から構造体を取得
 	mongoClient, err := controllers.ConnectMongoDB() //mongoClient is a pointer of address to DB.
 	if err != nil {
 		log.Println("Error from ConnectMongoDB()!", err)
 		os.Exit(1)
 	}
 
-	for i := range url {
-		mongoClient.GetURL(url[i])
-	}
-	//clean up DB
-	err = mongoClient.DeleteDuplicate()
+	//wrap by Circuit Breaker
+	_, err = cb.Execute(func() (interface{}, error) {
+		for i := range url {
+			err := mongoClient.GetURL(url[i])
+			if err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	}) //end of Circuit Breaker wrapper
 	if err != nil {
-		log.Println("error from DeleteDuplicate()")
-		log.Println(err)
+		log.Println("error from mongoClient.GetURL(): ", err)
 	}
+
+	//clean up DB once
+	log.Println("Run DeleteDuplicate().")
+	deleteError := mongoClient.DeleteDuplicate()
+	if deleteError != nil {
+		log.Println("erro from DeleteDuplicate(): ", deleteError)
+	}
+
+	log.Println("start ticker()")
 	t := time.NewTicker(10 * time.Hour)
 	for {
 		select {
 		case <-t.C:
 			log.Println("ticker is working.")
-
 			if os.Getenv("MONGO_SERVER") == "" { //this is in localhost
 				//web crawl　and store into mongo
 				for i := range url {
@@ -73,13 +110,13 @@ func ticker() {
 				}
 			} else { //on kubernetes cluster
 				//clean up DB
-				err = mongoClient.DeleteDuplicate()
-				if err != nil {
+				deleteError := mongoClient.DeleteDuplicate()
+				if deleteError != nil {
 					log.Println("error from DeleteDuplicate()")
-					log.Println(err)
+					log.Println(deleteError)
 				}
 			}
-		} //end of one t transaction.
+		} //end of one t transaction, select.
 	} //end of for loop
 	t.Stop()
 }
