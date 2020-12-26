@@ -59,12 +59,14 @@ func TestSignUpHandler(t *testing.T) {
 	if err1 != nil {
 		log.Fatalf("Failed to open page:%v", err)
 	}
-
+	log.Println(page.Title())
 	//go to index.html
-	err2 := page.Navigate("http://localhost:8080")
-	if err2 != nil {
-		log.Fatalf("Failed to navigate:%v", err2)
-	}
+	/*
+		err2 := page.Navigate("http://localhost:8080")
+		if err2 != nil {
+			log.Fatalf("Failed to navigate:%v", err2)
+		}
+	*/
 	time.Sleep(5000)
 	//page.Find("signup").Click()
 }
