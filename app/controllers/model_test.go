@@ -100,7 +100,7 @@ func TestReadMongoDB(t *testing.T) {
 	}
 
 	//actual result
-	result := mongoClient.ReadMongo()
+	result := mongoClient.ReadMongo("", false, false, false)
 	if len(result) != len(jobs) {
 		t.Error("Expected:", len(jobs), "but actually:", len(result))
 	}
