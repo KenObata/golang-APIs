@@ -114,7 +114,7 @@ func ConnectMongoDB() (*DB, error) {
 		host = os.Getenv("MONGO_SERVER")
 		port = MongoDBPort
 	}
-	log.Println("host:", host)
+	log.Println("host:", host, "port:", port)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"+host+":"+port).SetAuth(credential))
 	if err != nil {

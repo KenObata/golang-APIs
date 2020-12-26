@@ -37,7 +37,7 @@ func init() { //TestMain(m *testing.M)
 	err_createUser := db.RunCommand(ctx, bson.D{{"createUser", MongoUser},
 		{"pwd", MongoPassword},
 		{"roles", []bson.M{{"role": "readWrite", "db": "test"}}}})
-	if err_createUser != nil {
+	if err_createUser.Err() != nil {
 		log.Println("error creating user: ", err_createUser)
 	}
 	err_createCollection_Job := db.CreateCollection(ctx, Colname)
