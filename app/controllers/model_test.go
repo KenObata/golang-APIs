@@ -30,7 +30,7 @@ func init() { //TestMain(m *testing.M)
 	if err != nil {
 		log.Fatal("error Connect()", err)
 	}
-	defer testClient.Disconnect(ctx)
+	//defer testClient.Disconnect(ctx)
 	db := testClient.Database(Dbname)
 
 	//create user in test DB
@@ -50,8 +50,12 @@ func init() { //TestMain(m *testing.M)
 	}
 }
 
+func Teardown(t *testing.T) {
+	testClient.Disconnect(context.Background())
+}
+
 func TestInsertMongoDB(t *testing.T) {
-	mongoClient, _ := ConnectMongoDB()
+	mongoClient := &DB{testClient} //ConnectMongoDB()
 	//create test struct JsonJob
 	jsonJob := new(JsonJob)
 	jsonJob.URL = "https://leetcode.com/"
@@ -78,11 +82,12 @@ func TestReadMongoDB(t *testing.T) {
 	log.Println(os.Hostname())
 	log.Println(os.Getwd())
 	log.Println("os.Getenv:", os.Getenv("MONGO_SERVER"))
-	mongoClient, err0 := ConnectMongoDB()
-	if err0 != nil {
+	mongoClient := &DB{testClient}
+	//mongoClient, err0 := ConnectMongoDB()
+	/*if err0 != nil {
 		log.Println("error from ConnectMongoDB")
 		log.Println(err0)
-	}
+	}*/
 	//create expected result
 	collection := mongoClient.Client.Database(Dbname).Collection(Colname)
 	expect_result, err1 := collection.Find(context.Background(), bson.D{{"dateadded", bson.D{{"$gt", "2020-11-01"}}}})
