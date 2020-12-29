@@ -54,6 +54,8 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	//get uuid if exists in cookie
+
 	mongoClient, err := ConnectMongoDB()
 	if err != nil {
 		fmt.Println("Error from ConnectMongoDB()!")
@@ -152,7 +154,7 @@ func GetGlassdoor(doc *goquery.Document) (urls []string, companies []string, tit
 func (mongoClient *DB) GetURL(URL string) error {
 	log.Println("GetURL function is called from main.")
 	log.Println("URL:", URL)
-	//set timeout 5 sec
+	//set timeout
 	_, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 
@@ -166,7 +168,6 @@ func (mongoClient *DB) GetURL(URL string) error {
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
 		log.Println("Error from goquery.NewDocumentFromReader.")
-		//log.Fatal(err)
 		return err
 	}
 	var urls []string
@@ -225,7 +226,6 @@ func (mongoClient *DB) GetURL(URL string) error {
 		// Insert JSON data to MongoDB
 		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
 		if err != nil {
-			//log.Fatal(err)
 			return err
 		}
 	} //end of for loop of each array
