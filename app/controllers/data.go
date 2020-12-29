@@ -5,7 +5,6 @@ import (
 )
 
 type Job struct {
-	//ID string
 	URL     []string
 	Title   []string
 	Company []string
@@ -17,19 +16,8 @@ type JsonJob struct {
 	DateAdded string `json:"dateadded"`
 }
 
-type MongoExportJobs struct {
-	//ID        string `json:"id"`
-	URL       string `json:"url"`
-	Title     string `json:"title"`
-	Company   string `json:"company"`
-	DateAdded string `json:"dateadded"`
-}
-
 // Array for Job struct
 type Jobs []*Job
-
-//this month use for mongo find filtering
-//var thisYear string = time.RFC3339[0:8]
 
 // mongo-driverのクライアントを自前で定義した構造体DBへセット
 type DB struct {
@@ -55,12 +43,4 @@ type User struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type JWT struct {
-	Token string `json:"token"`
-}
-
-type Error struct {
-	Message string `json:"message"`
 }
