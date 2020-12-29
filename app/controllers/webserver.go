@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -17,19 +16,11 @@ import (
 )
 
 func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
-	/*mongoClient, err := ConnectMongoDB()
-	if err != nil {
-		fmt.Println("Error from ConnectMongoDB()!")
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	*/
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/index-login-success.html")
 	if err != nil {
-		log.Println("Error from template.ParseFiles()!")
-		log.Println(err)
+		log.Println("Error from template.ParseFiles()!", err)
 	}
 
 	name := r.FormValue("name")
@@ -49,7 +40,6 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 		filter_condition[2] = true
 	}
 	//pass filter condition
-	//new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	new_job_struct := ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
@@ -58,13 +48,6 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	//get uuid if exists in cookie
 
-	/*mongoClient, err := ConnectMongoDB()
-	if err != nil {
-		fmt.Println("Error from ConnectMongoDB()!")
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	*/
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/index.html")
@@ -92,25 +75,23 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("checkThisWeek:", filter_condition)
 	//pass filter condition
-	//new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	new_job_struct := ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }
 
-// 実際にMongoDBへ接続するクライアントを内包したDB addressを返却
 func ConnectMongoDB() (*DB, error) {
 	log.Println("ConnectMongoDB() is called.")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	// 認証が必要な場合は、options.Credentialを作成
+
 	credential := options.Credential{
 		AuthSource: Dbname,
 		Username:   MongoUser,
 		Password:   MongoPassword,
 	}
 	log.Println("credential.Username:", credential.Username)
-	// 認証情報・接続情報を元にclientを作成
+
 	var host string
 	var port string
 	if os.Getenv("MONGO_SERVER") == "" {
@@ -153,86 +134,4 @@ func GetGlassdoor(doc *goquery.Document) (urls []string, companies []string, tit
 		companies = companies[:len(companies)-1]
 	}
 	return urls, companies, titles
-}
-
-func (mongoClient *DB) GetURL(URL string) error {
-	log.Println("GetURL function is called from main.")
-	log.Println("URL:", URL)
-	//set timeout
-	_, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-	defer cancel()
-
-	// Load the URL
-	res, e := http.Get(URL)
-	if e != nil {
-		log.Println("Error from http.Get(URL)")
-		return e
-	}
-	defer res.Body.Close()
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Println("Error from goquery.NewDocumentFromReader.")
-		return err
-	}
-	var urls []string
-	var companies []string
-	var titles []string
-
-	if strings.Contains(URL, "glassdoor") {
-		urls, companies, titles = GetGlassdoor(doc)
-	} else {
-		doc.Find("a").Each(func(_ int, s *goquery.Selection) {
-			url, _ := s.Attr("href")
-			title := s.Text()
-
-			if len(companies) < len(titles)-1 {
-				log.Println("something is wrong with:", titles)
-				os.Exit(1)
-			}
-			if strings.Contains(url, "/company/") {
-				//get company name
-				company := s.Text()
-				//log.Println("Get URL(), company name:", company)
-				companies = append(companies, company)
-			} else if strings.Contains(url, "https://ca.linkedin.com/jobs/view/") && len(companies) == len(titles) {
-				urls = append(urls, url)
-				titles = append(titles, title)
-			}
-		})
-	}
-
-	job := &Job{
-		Title:   titles,
-		URL:     urls,
-		Company: companies,
-	}
-	// Unmarshal結果の格納先である構造体のポインターを取得
-	jsonJob := new(JsonJob)
-	//create json
-	var i int
-	currentTime := time.Now()
-	log.Println("len(job.Company):", len(job.Company))
-	log.Println("len(job.Title):", len(job.Title))
-	log.Println("len(job.URL):", len(job.URL))
-	for i = 0; i < len(companies); i++ {
-		jsonJob.URL = job.URL[i]
-		jsonJob.Title = job.Title[i]
-		jsonJob.Company = job.Company[i]
-		jsonJob.DateAdded = currentTime.Format("2006-01-02")
-
-		// convert Job struct to JSON by marshal
-		jsonJobJSON, err := json.Marshal(jsonJob)
-		if err != nil {
-			log.Println("error from json.Marshal(jsonJob)", jsonJobJSON)
-			log.Println(err)
-			return err
-		}
-		// Insert JSON data to MongoDB
-		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
-		if err != nil {
-			return err
-		}
-	} //end of for loop of each array
-	log.Println("End of for loop to insert jsonJobJSON.")
-	return nil
 }
