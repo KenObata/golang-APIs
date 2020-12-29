@@ -1,15 +1,11 @@
 package controllers
 
 import (
-	"context"
-	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func InternalHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,18 +15,14 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 	//debug
 	log.Println("input email in InternalHandler:", email)
 	log.Println("input PW in InternalHandler:", password)
-	mongoClient, _ := ConnectMongoDB()
-	collection := mongoClient.Client.Database(Dbname).Collection(ColnameUser)
-	cur, err := collection.Find(context.Background(), bson.M{"email": email, "password": password})
-	var episodesFiltered []bson.M
-	if err = cur.All(context.Background(), &episodesFiltered); err != nil {
-		log.Println("error from InternalHandler()")
-		log.Fatal(err)
+
+	db := ConnectPostgres()
+	//check if user certainly exists
+	rows, err := db.Query("SELECT id, email, password FROM user_list where email=$1 AND password=$2;", email, password)
+	if err != nil {
+		log.Println("error from SELECT * from user_list", err.Error())
 	}
-	log.Println("cur.Current:", cur.Current)
-	if len(episodesFiltered) == 0 {
-		//var error Error
-		//errorInResponse(w, http.StatusBadRequest, error)
+	if !(rows.Next()) {
 		log.Println("Login failed.")
 		wd, err := os.Getwd()
 		t, err := template.ParseFiles(wd + "/app/view/login-error.html")
@@ -39,16 +31,35 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		t.Execute(w, nil)
 	} else {
-		//create a session by Redis
-		/*SetKey(episodesFiltered[0])
-		log.Println("episodesFiltered[0]:", episodesFiltered[0])
-		log.Println("episodesFiltered[0][\"id\"]:", episodesFiltered[0]["id"])*/
+		var id string
+		var email string
+		var password string
+		err := rows.Scan(&id, &email, &password)
+		if err != nil {
+			log.Println("error from rows.Scan() ", err)
+		}
 
+		//create a session by Redis
+		/*uuid, err := SetKey(context.Background(), id) //userFiltered[0] = User struct
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.Println("uuid: ", uuid)
+			//pass uuid to cookie
+		}
+		//test get by uuid--------------
+		res, err := GetKey(context.Background(), uuid)
+		log.Println("GetKey:", res)
+		if err != nil {
+			log.Println("GetKey error:", err)
+		} //------------------------------
+		*/
 		//http Redirect
 		target := "http://" + r.Host + "/userpost"
 		log.Println("http redirect to ", target)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
+
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,40 +81,32 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	t.Execute(w, nil)
 
-	//get user niput first
+	//get user iput first
 	var job JsonJob
 	companyName := r.FormValue("companyName")
 	jobTitle := r.FormValue("jobTitle")
 	jobURL := r.FormValue("jobURL")
 
-	//append to JSON object
-	if companyName != "" {
-		job.Company = companyName
-	}
-	if jobTitle != "" {
-		job.Title = jobTitle
-	}
-	if jobURL != "" {
-		job.URL = jobURL
-	}
 	//get dateadded column
 	currentTime := time.Now()
-	job.DateAdded = currentTime.Format("2006-01-02")
 
 	if companyName != "" && jobTitle != "" && jobURL != "" {
-		jsonJobJSON, err := json.Marshal(job)
+		job.Company = companyName
+		job.Title = jobTitle
+		job.URL = jobURL
+		job.DateAdded = currentTime.Format("2006-01-02")
 
-		mongoClient, _ := ConnectMongoDB()
-		err = mongoClient.InsertMongoDB(jsonJobJSON, Colname)
+		err = InsertJob(job)
+
 		if err != nil {
-			log.Println("User InsertMongoDB:", err)
+			log.Println("Error from InsertJob:", err)
 			new_t, _ := template.ParseFiles(wd + "/app/view/userpost-error.html")
-			new_t.Execute(w, err)
+			new_t.Execute(w, err.Error())
 		} else {
 			new_t, _ := template.ParseFiles(wd + "/app/view/userpost-success.html")
 			new_t.Execute(w, nil)
 		}
 
-	}
+	} //end of insert
 
 }
