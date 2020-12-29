@@ -9,7 +9,6 @@ import (
 	"time"
 	_ "time"
 
-	"github.com/sony/gobreaker"
 	_ "go.mongodb.org/mongo-driver/bson"
 )
 
@@ -31,37 +30,15 @@ func main() {
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 
+	controllers.Init_db() //initialize Postgres
+	controllers.Init()    //initialize Redis
+
 	go ticker()
-	//controllers.Init() //initialize Redis
+
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal("error from ListenAndServe()", err)
 	}
-}
-
-var cb *gobreaker.CircuitBreaker
-
-func init() {
-	var settings gobreaker.Settings
-	settings.Name = "HTTP GET"
-	settings.ReadyToTrip = func(counts gobreaker.Counts) bool {
-		//circuit breaker will trip when 60% of requests failed an dat least 10 requests were made.
-		failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
-		return counts.Requests >= 5 && failureRatio >= 0.6
-	}
-	settings.Timeout = time.Millisecond
-	settings.OnStateChange = func(name string, from gobreaker.State, to gobreaker.State) {
-		if to == gobreaker.StateOpen {
-			log.Println("State Open!")
-		}
-		if from == gobreaker.StateOpen && to == gobreaker.StateHalfOpen {
-			log.Println("Going from Open to Half-Open!")
-		}
-		if from == gobreaker.StateHalfOpen && to == gobreaker.StateClosed {
-			log.Println("Going from Half-Open to Close!")
-		}
-	} //end of settings.OnStateChange
-	cb = gobreaker.NewCircuitBreaker(settings)
 }
 
 func ticker() {
@@ -76,18 +53,11 @@ func ticker() {
 		os.Exit(1)
 	}
 
-	//wrap by Circuit Breaker
-	_, err = cb.Execute(func() (interface{}, error) {
-		for i := range url {
-			err := mongoClient.GetURL(url[i])
-			if err != nil {
-				return nil, err
-			}
+	for i := range url {
+		err := mongoClient.GetURL(url[i])
+		if err != nil {
+			log.Println("error from mongoClient.GetURL(): ", err)
 		}
-		return nil, nil
-	}) //end of Circuit Breaker wrapper
-	if err != nil {
-		log.Println("error from mongoClient.GetURL(): ", err)
 	}
 
 	//clean up DB once
