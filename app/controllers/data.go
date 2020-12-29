@@ -38,13 +38,16 @@ type DB struct {
 
 const (
 	// 接続先のDB情報を入力
-	MongoDBHost   = "127.0.0.1" //mongodb.default.svc.cluster.local.
-	MongoDBPort   = "27017"     //"27016" is used by dev
-	MongoUser     = "Ken"
-	MongoPassword = "k0668466425"
-	Dbname        = "test" //"databases"
-	Colname       = "Job"
-	ColnameUser   = "User"
+	MongoDBHost       = "127.0.0.1" //mongodb.default.svc.cluster.local.
+	MongoDBPort       = "27017"     //"27016" is used by dev
+	MongoUser         = "Ken"
+	MongoPassword     = "k0668466425"
+	Dbname            = "test" //"databases"
+	Colname           = "Job"
+	ColnameUser       = "User"
+	POSTGRES_HOST     = "host.docker.internal"
+	POSTGRES_USER     = "postgres"
+	POSTGRES_PASSWORD = "k0668466425"
 )
 
 type User struct {
