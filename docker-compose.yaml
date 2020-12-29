@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/scraping #->.json path is /scraping/app/events.json
     ports:
-      - "8080:8080"
+      - "8081:8080"
     depends_on:
       - mongodb
       - db
