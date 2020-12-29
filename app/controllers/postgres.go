@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -64,14 +65,14 @@ func GetURL2(URL string) error {
 		})
 	} //end of scraping
 
-	jsonJob := new(JsonJob)
+	var job JsonJob
 	for i := 0; i < len(companies); i++ {
-		jsonJob.URL = urls[i]
-		jsonJob.Title = titles[i]
-		jsonJob.Company = companies[i]
-		jsonJob.DateAdded = time.Now().Format("2006-01-02")
+		job.URL = urls[i]
+		job.Title = titles[i]
+		job.Company = companies[i]
+		job.DateAdded = time.Now().Format("2006-01-02")
 		// Insert JSON data to MongoDB
-		err = InsertJob(jsonJob)
+		err = InsertJob(job)
 		if err != nil {
 			return err
 		}
@@ -80,7 +81,7 @@ func GetURL2(URL string) error {
 	return nil
 }
 
-func connectPostgres() *sql.DB {
+func ConnectPostgres() *sql.DB {
 	var db *sql.DB
 	var err error
 	if os.Getenv("MONGO_SERVER") == "" {
@@ -97,27 +98,53 @@ func connectPostgres() *sql.DB {
 	defer db.Close()
 	return nil
 }
-func InsertJob(jsonJob *JsonJob) error {
-	db := connectPostgres()
+func InsertJob(job JsonJob) error {
+	db := ConnectPostgres()
 	//check if record already exists
-	rows, err := db.Query("SELECT * FROM job where company=$1 and title=$2;", jsonJob.Company, jsonJob.Title)
+	rows, err := db.Query("SELECT * FROM job where company=$1 and title=$2;", job.Company, job.Title)
 	if err != nil {
 		log.Println("error from  select: ", err.Error())
+		return fmt.Errorf("error from  InsertJob()-select: " + err.Error())
 	}
 	if rows.Next() {
-		log.Println("company ", jsonJob.Company, "already exists.")
+		log.Println("company ", job.Company, " already exists.")
+		return fmt.Errorf("company " + job.Company + " already exists.")
 	} else {
 		//insert new record.
-		_, err = db.Query("INSERT INTO job(company, title, url, dateadded) SELECT $1,$2,$3,$4;", jsonJob.Company, jsonJob.Title, jsonJob.URL, jsonJob.DateAdded)
+		_, err = db.Query("INSERT INTO job(company, title, url, dateadded) SELECT $1,$2,$3,$4;", job.Company, job.Title, job.URL, job.DateAdded)
 		if err != nil {
 			log.Println("error from  insert into JOB: ", err.Error())
+			return fmt.Errorf("error from  insert into JOB: " + err.Error())
+		}
+	}
+	return nil
+}
+
+func InsertUser(user User) error {
+	db := ConnectPostgres()
+	//check if user already exists
+	rows, _ := db.Query("SELECT * FROM user_list where email=$1;", user.Email)
+	if rows.Next() {
+		return fmt.Errorf("user email: " + user.Email + " already exists.")
+
+	} else {
+		//insert new record.
+		_, err := db.Query("INSERT INTO user_list(email, password) SELECT $1,$2;", user.Email, user.Password)
+		if err != nil {
+			return fmt.Errorf("error from  insert into user_list: " + err.Error())
 		}
 	}
 	return nil
 }
 
 func DeleteJobDuplicate() error {
-	db := connectPostgres()
+	db := ConnectPostgres()
+
+	//first, delete test records
+	_, deleteErr := db.Query("DELETE FROM job where company like '%' || $1 || '%' ;", "test")
+	if deleteErr != nil {
+		log.Println("Error from delete TEST job:", deleteErr.Error())
+	}
 
 	//check if duplicate exists
 	rows, err := db.Query("SELECT company, title, url, count(*) FROM job GROUP BY company, title, url HAVING COUNT(*) > 1;")
@@ -131,14 +158,17 @@ func DeleteJobDuplicate() error {
 		var count int
 		err = rows.Scan(&company, &title, &url, &count)
 		count -= 1
-		db.Query("DELETE job where company=$1 and title=$2 and url=$3 LIMIT $4;", company, title, url, count)
+		_, err = db.Query("DELETE FROM job where company=$1 and title=$2 and url=$3 LIMIT $4;", company, title, url, count)
+		if err != nil {
+			log.Println("Error from delete job:", err.Error())
+		}
 	}
 	return nil
 }
 
 func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, checkThisWeek bool) []JsonJob {
 	log.Println("ReadMongo: user filter is ", user_iput)
-	db := connectPostgres()
+	db := ConnectPostgres()
 
 	//first, extract last 1 month records.
 	currentTime := time.Now()
@@ -148,9 +178,9 @@ func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, c
 	var rows *sql.Rows
 	var selectErr error
 	if len(user_iput) > 0 {
-		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1 and company like '%' || $2 || '%';", lastMonth, user_iput)
+		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1 and company like '%' || $2 || '%' ORDER BY dateadded DESC;", lastMonth, user_iput)
 	} else {
-		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1;", lastMonth)
+		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1 ORDER BY dateadded DESC;", lastMonth)
 	}
 
 	if selectErr != nil {
