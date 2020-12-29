@@ -3,8 +3,8 @@ CREATE DATABASE test_db;
 
 \c test_db;
 
-CREATE TABLE IF NOT EXISTS job(id serial PRIMARY KEY, company varchar(255) NOT NULL, title text NOT NULL, url text NOT NULL, dateadded varchar(255) NOT NULL);
-CREATE TABLE IF NOT EXISTS user_list(id serial PRIMARY KEY, email varchar(255) NOT NULL, password varchar(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS job(id serial PRIMARY KEY, company varchar(255) NOT NULL, title text NOT NULL, url text NOT NULL UNIQUE, dateadded varchar(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS user_list(id serial PRIMARY KEY, email varchar(255) NOT NULL UNIQUE, password varchar(255) NOT NULL);
 CREATE TABLE IF NOT EXISTS user_job(id serial PRIMARY KEY, user_id int, job_id int);
 
 ALTER TABLE user_job
