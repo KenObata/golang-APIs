@@ -9,9 +9,11 @@ services:
       - "8080:8080"
     depends_on:
       - mongodb
+      - db
     tty: true
     environment:
       - MONGO_SERVER=mongodb   #NOT host.docker.internal
+
   mongodb:
     image: mongo
     container_name: mongodb
@@ -19,6 +21,18 @@ services:
       - mongodata
     ports:
       - "27017:27017" #local uses port 27016 to port forward.
+
+  db: #this is ganne be a host name for postgres?
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=k0668466425
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./flyway/init:/docker-entrypoint-initdb.d # init file for Create DataBase
+
 volumes:
   mongodata:
     driver: local
