@@ -17,12 +17,13 @@ import (
 )
 
 func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
-	mongoClient, err := ConnectMongoDB()
+	/*mongoClient, err := ConnectMongoDB()
 	if err != nil {
 		fmt.Println("Error from ConnectMongoDB()!")
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	*/
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/index-login-success.html")
@@ -48,7 +49,8 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 		filter_condition[2] = true
 	}
 	//pass filter condition
-	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
+	//new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
+	new_job_struct := ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }
@@ -56,12 +58,13 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	//get uuid if exists in cookie
 
-	mongoClient, err := ConnectMongoDB()
+	/*mongoClient, err := ConnectMongoDB()
 	if err != nil {
 		fmt.Println("Error from ConnectMongoDB()!")
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	*/
 	// Working Directory
 	wd, err := os.Getwd()
 	t, err := template.ParseFiles(wd + "/app/view/index.html")
@@ -89,7 +92,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("checkThisWeek:", filter_condition)
 	//pass filter condition
-	new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
+	//new_job_struct := mongoClient.ReadMongo(name, filter_condition[0], filter_condition[1], filter_condition[2])
+	new_job_struct := ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }
@@ -232,27 +236,3 @@ func (mongoClient *DB) GetURL(URL string) error {
 	log.Println("End of for loop to insert jsonJobJSON.")
 	return nil
 }
-
-/*
-func (db *DB) DoMongoImport() {
-	log.Println("DoMongoImport called.")
-	wd, _ := os.Getwd()
-	docsPath, _ := filepath.Abs(wd + "/app/Job.json")
-	byteValues, err1 := ioutil.ReadFile(docsPath)
-	if err1 != nil {
-		fmt.Println(err1.Error())
-		os.Exit(1)
-	}
-	var mongoExport []MongoExportJobs
-	err := json.Unmarshal(byteValues, &mongoExport)
-	if err != nil {
-		log.Println("error from unmarshal!")
-		log.Println(err)
-	}
-	for _, data := range mongoExport {
-		log.Println(data.Company)
-		jsonJobJSON, _ := json.Marshal(data)
-		db.InsertMongoDB(jsonJobJSON, Colname)
-	}
-}
-*/
