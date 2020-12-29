@@ -6,7 +6,7 @@ ENV PORT=8080
 #ENV MONGO_SERVER=host.docker.internal
 WORKDIR /
 COPY . .
-RUN go build main.go && go build app/controllers/model_test.go
+RUN go build main.go
 
 FROM alpine
 COPY --from=builder /main /main
