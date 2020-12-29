@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stateful
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  serviceName: stateful
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - image: postgres:latest
+          name: db
+          env:
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: k0668466425
+          volumeMounts:
+            - name: pv-gp2-claim #needs to match with metadata-name of volumeClaimTemplates
+              mountPath: /data
+  volumeClaimTemplates: #this is persistent volume claim.
+    - metadata:
+        name: pv-gp2-claim #this is ganna be a .yaml name of pod!
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: gp2
