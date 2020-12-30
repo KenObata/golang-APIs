@@ -50,7 +50,7 @@ func ticker() {
 	for i := range url {
 		err := controllers.GetURL2(url[i])
 		if err != nil {
-			log.Println("error from mongoClient.GetURL(): ", err)
+			log.Println("error from GetURL(): ", err.Error())
 		}
 	}
 
