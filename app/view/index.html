@@ -58,7 +58,7 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <!--th>#</th-->
+                    <th>#</th>
                     <th class="company">Company</th>
                     <!--th>Title</th-->
                     <th class="url">URL</th>
@@ -70,6 +70,7 @@
 
                     {{range .}}
                         <tr>
+                            <td ><input type="checkbox"></td>
                             <td class="company">{{.Company}}</td>
                             <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
                             <td class="date">{{.DateAdded}}</td>
