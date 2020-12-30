@@ -98,6 +98,19 @@ func ConnectPostgres() *sql.DB {
 	//defer db.Close()
 	return nil
 }
+
+func Insert_user_job(user_id int, job_id int) error {
+	db := ConnectPostgres()
+	_, err := db.Query("INSERT INTO user_job where user_id=$1 and job_id=$2;", user_id, job_id)
+	if err != nil {
+		log.Println("error from  INSERT INTO user_job: ", err.Error())
+		return fmt.Errorf("error from  INSERT INTO user_job: " + err.Error())
+	}
+
+	db.Close()
+	return nil
+}
+
 func InsertJob(job JsonJob) error {
 	db := ConnectPostgres()
 	//conn, _:=db.Conn(context.Background())
@@ -182,9 +195,9 @@ func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, c
 	var rows *sql.Rows
 	var selectErr error
 	if len(user_iput) > 0 {
-		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1 and company like '%' || $2 || '%' ORDER BY dateadded DESC;", lastMonth, user_iput)
+		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded FROM job WHERE dateadded > $1 and company like '%' || $2 || '%' ORDER BY dateadded DESC;", lastMonth, user_iput)
 	} else {
-		rows, selectErr = db.Query("SELECT company, title, url, dateadded FROM job WHERE dateadded > $1 ORDER BY dateadded DESC;", lastMonth)
+		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded FROM job WHERE dateadded > $1 ORDER BY dateadded DESC;", lastMonth)
 	}
 
 	if selectErr != nil {
@@ -197,14 +210,16 @@ func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, c
 	var toBeAdded bool = true
 	thisWeek := currentTime.AddDate(0, 0, -7).Format("2006-01-02")
 	for rows.Next() {
+		var id int
 		var company string
 		var title string
 		var url string
 		var dateadded string
-		err := rows.Scan(&company, &title, &url, &dateadded)
+		err := rows.Scan(&id, &company, &title, &url, &dateadded)
 		if err != nil {
 			log.Println("error from rows.Scan() ", err)
 		}
+		doc.ID = id
 		doc.Company = company
 		doc.Title = title
 		doc.URL = url
