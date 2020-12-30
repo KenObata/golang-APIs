@@ -95,11 +95,12 @@ func ConnectPostgres() *sql.DB {
 		log.Println("postgres successfully connected.")
 		return db
 	}
-	defer db.Close()
+	//defer db.Close()
 	return nil
 }
 func InsertJob(job JsonJob) error {
 	db := ConnectPostgres()
+	//conn, _:=db.Conn(context.Background())
 	//check if record already exists
 	rows, err := db.Query("SELECT * FROM job where company=$1 and title=$2;", job.Company, job.Title)
 	if err != nil {
@@ -117,6 +118,7 @@ func InsertJob(job JsonJob) error {
 			return fmt.Errorf("error from  insert into JOB: " + err.Error())
 		}
 	}
+	db.Close()
 	return nil
 }
 
@@ -134,6 +136,7 @@ func InsertUser(user User) error {
 			return fmt.Errorf("error from  insert into user_list: " + err.Error())
 		}
 	}
+	db.Close()
 	return nil
 }
 
@@ -163,6 +166,7 @@ func DeleteJobDuplicate() error {
 			log.Println("Error from delete job:", err.Error())
 		}
 	}
+	db.Close()
 	return nil
 }
 
@@ -224,5 +228,6 @@ func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, c
 		}
 		toBeAdded = true //reset the flag.
 	}
+	db.Close()
 	return jobs
 }
