@@ -9,7 +9,9 @@ type Job struct {
 	Title   []string
 	Company []string
 }
+
 type JsonJob struct {
+	ID        int    `json:"id"`
 	URL       string `json:"url"`
 	Title     string `json:"title"`
 	Company   string `json:"company"`
