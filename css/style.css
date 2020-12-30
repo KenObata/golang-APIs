@@ -41,7 +41,8 @@ th {
 }
 
 th, td {
-    padding: 15px;
+    padding-top: 15px;
+    padding-bottom: 15px;
     text-align: center;
     /*width: 33.33%;  to enable "word-break: break-all" */
     word-break: break-all; /* 4. */
