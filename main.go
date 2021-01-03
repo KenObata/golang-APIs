@@ -30,8 +30,8 @@ func main() {
 	//add css below
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css")))) //http.Handle("/css/")
 
-	controllers.Init_db() //initialize Postgres
-	//controllers.Init()    //initialize Redis
+	controllers.Init_db()    //initialize Postgres
+	controllers.Init_redis() //initialize Redis
 
 	go ticker()
 
