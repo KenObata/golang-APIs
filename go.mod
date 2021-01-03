@@ -8,7 +8,6 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/lib/pq v1.9.0
 	github.com/sclevine/agouti v3.0.0+incompatible
-	github.com/sony/gobreaker v0.4.1
 	go.mongodb.org/mongo-driver v1.4.2
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
 )
