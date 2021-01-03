@@ -1,19 +1,19 @@
 package controllers
 
-/*Some info: https://onemuri.space/note/vo6tcv8fq/*/
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
 	"time"
 
-	"github.com/go-redis/redis"
-	"go.mongodb.org/mongo-driver/bson"
+	redis "github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 )
 
 var rClient *redis.Client
+var ctx = context.Background()
 
-func Init() {
+func Init_redis() {
 	var host string
 	if os.Getenv("MONGO_SERVER") == "" {
 		host = MongoDBHost
@@ -29,17 +29,35 @@ func Init() {
 }
 
 //userMap={"id": 1, "email":"xxx@gmail.com", "password":"2030"}
-func SetKey(userMap bson.M) error {
+func SetKey(ctx context.Context, userId string) (string, error) {
 	//get number of sessions
-	session_num := rClient.DBSize().Val() //rClient has ctx already
-	var key_str string
-	key_str = fmt.Sprint(userMap["id"])
-	err := rClient.Set(key_str, session_num+1, 10*time.Second)
+	session_num := rClient.DBSize(ctx).Val() //rClient has ctx already
+	log.Println("session_num:", session_num)
+
+	u, err := uuid.NewRandom()
 	if err != nil {
-		log.Println(err)
-		return err.Err()
+		log.Println("error from UUID generation.", err)
+		return "", err
+	}
+	uu := u.String()
+
+	//log.Println("key_str:", key_str)
+	setErr := rClient.Set(ctx, uu, userId, 10*time.Second)
+	//log.Println("result of set:", err.Err(), "| ", err.Val())
+	if setErr.Err() != nil {
+		log.Println("error from rClient.Set()", setErr.Err())
+		return "", setErr.Err()
 	} else {
 		log.Println("SetKey success.")
 	}
-	return nil
+	return uu, nil
+}
+
+func GetKey(ctx context.Context, uuid string) (string, error) {
+
+	res, err := rClient.Get(ctx, uuid).Result()
+	if err != nil {
+		return "", err
+	}
+	return res, nil
 }
