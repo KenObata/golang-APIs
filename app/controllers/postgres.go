@@ -20,7 +20,7 @@ func Init_db() {
 }
 
 func GetURL2(URL string) error {
-	log.Println("GetURL function is called from main.")
+	log.Println("GetURL2 function is called from main.")
 	log.Println("URL:", URL)
 	//set timeout
 	_, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
@@ -66,6 +66,7 @@ func GetURL2(URL string) error {
 	} //end of scraping
 
 	var job JsonJob
+	log.Println("len(companies): ", len(companies))
 	for i := 0; i < len(companies); i++ {
 		job.URL = urls[i]
 		job.Title = titles[i]
@@ -74,7 +75,7 @@ func GetURL2(URL string) error {
 		// Insert JSON data to MongoDB
 		err = InsertJob(job)
 		if err != nil {
-			return err
+			log.Println(err)
 		}
 	} //end of passing jsonJob to postgres
 	log.Println("End of for loop to insert jsonJobJSON.")
@@ -95,7 +96,7 @@ func ConnectPostgres() *sql.DB {
 		log.Println("postgres successfully connected.")
 		return db
 	}
-	//defer db.Close()
+	defer db.Close()
 	return nil
 }
 
@@ -113,6 +114,8 @@ func Insert_user_job(user_id int, job_id int) error {
 
 func InsertJob(job JsonJob) error {
 	db := ConnectPostgres()
+	log.Println("InsertJob called, job= ", job.Company)
+
 	//conn, _:=db.Conn(context.Background())
 	//check if record already exists
 	rows, err := db.Query("SELECT * FROM job where company=$1 and title=$2;", job.Company, job.Title)
@@ -126,12 +129,13 @@ func InsertJob(job JsonJob) error {
 	} else {
 		//insert new record.
 		_, err = db.Query("INSERT INTO job(company, title, url, dateadded) SELECT $1,$2,$3,$4;", job.Company, job.Title, job.URL, job.DateAdded)
+		log.Println(job.Company, "is inserted.")
 		if err != nil {
 			log.Println("error from  insert into JOB: ", err.Error())
 			return fmt.Errorf("error from  insert into JOB: " + err.Error())
 		}
 	}
-	db.Close()
+	defer db.Close()
 	return nil
 }
 
