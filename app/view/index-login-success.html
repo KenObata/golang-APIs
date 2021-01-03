@@ -4,42 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css" type="text/css">
     <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script type="text/javascript" src="/wp-includes/js/jquery/jquery.cookie.js"></script>
-
-    <script type="text/javascript">
-        jQuery(function($){
-            //Once reloaded, reflect checkbox to cookie data
-            if($.cookie("appliedCheckbox_selected_value")){
-
-                var load_values = $.cookie("appliedCheckbox_selected_value").split(",");
-
-                for(var i = 0; i < load_values.length; ++i){
-                    load_values[i] = decodeURIComponent(load_values[i]);
-                }
-
-                $("input[type=checkbox][name=appliedCheckbox]").each(function(){
-                    this.checked = $.inArray(this.value, load_values) != -1;
-                });
-            }
-
-            //If checobox is changed, save checkbox to cookie.
-            $("input[type=checkbox][name=appliedCheckbox]").change(function(){
-                var save_values = [];
-
-                $("input[type=checkbox][name=appliedCheckbox]").each(function(){
-                    this.checked && save_values.push(encodeURIComponent(this.value));
-                });
-                $.cookie("appliedCheckbox_selected_value", save_values.join(","));
-            });
-
-            //▼現在のcookieの値を見る
-            //$("#btn_show_cookie").click(function(){
-            //    $("#txt_cookie_value").val($.cookie("chk_sample_selected_value"));
-            //});
-
-        });// end of jQuery(functio
-    </script>
 </head>
 
 <body>
@@ -87,7 +53,7 @@
                 <!--/div-->
             </div>
 
-            <table class="table">
+            <table class="table" id="myTable">
                 <thead>
                 <tr>
                     <th>#</th>
@@ -103,7 +69,7 @@
                 {{range .}}
                     <!--form action="" method="POST"-->
                         <tr>
-                            <td ><input type="checkbox" name="appliedCheckbox" value="{{.ID}}"></td>
+                            <td ><input type="checkbox" name="appliedCheckbox" value="{{.ID}}" id="{{.ID}}"></td>
                             <td class="company">{{.Company}}</td>
                             <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
                             <td class="date">{{.DateAdded}}</td>
