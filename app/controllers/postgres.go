@@ -100,15 +100,19 @@ func ConnectPostgres() *sql.DB {
 	return nil
 }
 
-func Insert_user_job(user_id int, job_id int) error {
+func InsertUserJob(userId int, jobId int) error {
 	db := ConnectPostgres()
-	_, err := db.Query("INSERT INTO user_job where user_id=$1 and job_id=$2;", user_id, job_id)
+	log.Println("InsertUserJob called, userId= ", userId, "jobId: ", jobId)
+
+	//insert IF NOT EXISTS
+	_, err := db.Query("INSERT INTO user_job(user_id,job_id) SELECT $1,$2 WHERE NOT EXISTS(SELECT * FROM user_job where user_id=$1 and job_id=$2);", userId, jobId)
+
 	if err != nil {
-		log.Println("error from  INSERT INTO user_job: ", err.Error())
-		return fmt.Errorf("error from  INSERT INTO user_job: " + err.Error())
+		log.Println("error from  insert into user_job: ", err.Error())
+		return fmt.Errorf("error from  insert into user_job: " + err.Error())
 	}
 
-	db.Close()
+	defer db.Close()
 	return nil
 }
 
@@ -187,6 +191,89 @@ func DeleteJobDuplicate() error {
 	return nil
 }
 
+func ReadUserCustomPostgres(user_iput string, checkSoftware bool, checkDataScience bool, checkThisWeek bool, done bool, userId int) []JsonJob {
+	log.Println("ReadUserCustomPostgres: userId is: ", userId)
+	db := ConnectPostgres()
+
+	//first, extract last 1 month records.
+	currentTime := time.Now()
+	lastMonth := time.Date(currentTime.Year(), currentTime.Month()-1, currentTime.Day(), 0, 0, 0, 0, time.Local).Format("2006-01-02")
+
+	//filter by company name if any.
+	var rows *sql.Rows
+	var selectErr error
+	if len(user_iput) > 0 {
+		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded, "+
+			"CASE WHEN uj.job_id=job.id THEN 'checked' ELSE '' END AS check "+
+			"FROM job "+
+			"LEFT JOIN (SELECT job_id FROM user_job WHERE user_id=$1) uj "+
+			"ON uj.job_id=job.id "+
+			"WHERE dateadded > $2 and company like '%' || $3 || '%'  "+
+			"ORDER BY dateadded DESC;", userId, lastMonth, user_iput)
+	} else {
+		rows, selectErr = db.Query("SELECT job.id, company, title, url, dateadded,  "+
+			"CASE WHEN uj.job_id=job.id THEN 'checked' ELSE '' END AS check "+
+			"FROM job "+
+			"LEFT JOIN (SELECT job_id FROM user_job WHERE user_id=$1) uj "+
+			"ON uj.job_id=job.id "+
+			"WHERE dateadded > $2 "+
+			"ORDER BY dateadded DESC;", userId, lastMonth)
+	}
+
+	if selectErr != nil {
+		log.Println("err from SELECT at ReadUserCustomPostgres: ", selectErr.Error())
+		return nil
+	}
+
+	var jobs []JsonJob
+	var doc JsonJob
+	var toBeAdded bool = true
+	thisWeek := currentTime.AddDate(0, 0, -7).Format("2006-01-02")
+	for rows.Next() {
+		var id int
+		var company string
+		var title string
+		var url string
+		var dateadded string
+		var check string
+		err := rows.Scan(&id, &company, &title, &url, &dateadded, &check)
+		if err != nil {
+			log.Println("error from rows.Scan() ", err)
+		}
+		doc.ID = id
+		doc.Company = company
+		doc.Title = title
+		doc.URL = url
+		doc.DateAdded = dateadded
+		doc.Checked = check
+		//condition: software developer only
+		if checkSoftware && !(strings.Contains(doc.Title, "Software") || strings.Contains(doc.Title, "Developer") || strings.Contains(doc.Title, "Engineer")) {
+			toBeAdded = false
+		}
+		//condition: this week only
+		if checkThisWeek && strings.Compare(doc.DateAdded, thisWeek) < 0 {
+			toBeAdded = false
+		}
+		//condition: data science only
+		if checkDataScience && !(strings.Contains(doc.Title, "Data") || strings.Contains(doc.Title, "Analytics")) {
+			toBeAdded = false
+		}
+		//condition: filter by Done
+		if done && doc.Checked == "" {
+			toBeAdded = false
+		}
+		if toBeAdded {
+			//append to jobs
+			jobs = append(jobs, doc)
+		}
+		toBeAdded = true //reset the flag.
+	}
+	db.Close()
+	log.Println("jobs: ", jobs)
+	log.Println("end of ReadUserCustomPostgres")
+	return jobs
+}
+
 func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, checkThisWeek bool) []JsonJob {
 	log.Println("ReadMongo: user filter is ", user_iput)
 	db := ConnectPostgres()
@@ -199,13 +286,18 @@ func ReadPostgres(user_iput string, checkSoftware bool, checkDataScience bool, c
 	var rows *sql.Rows
 	var selectErr error
 	if len(user_iput) > 0 {
-		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded FROM job WHERE dateadded > $1 and company like '%' || $2 || '%' ORDER BY dateadded DESC;", lastMonth, user_iput)
+		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded "+
+			"FROM job WHERE dateadded > $1 and company like '%' || $2 || '%' "+
+			"ORDER BY dateadded DESC;", lastMonth, user_iput)
 	} else {
-		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded FROM job WHERE dateadded > $1 ORDER BY dateadded DESC;", lastMonth)
+		rows, selectErr = db.Query("SELECT id, company, title, url, dateadded "+
+			"FROM job "+
+			"WHERE dateadded > $1 "+
+			"ORDER BY dateadded DESC;", lastMonth)
 	}
 
 	if selectErr != nil {
-		log.Println("err from collection.Find()")
+		log.Println("err from collection.Find() ", selectErr.Error())
 		return nil
 	}
 
