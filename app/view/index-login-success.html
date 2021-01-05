@@ -35,49 +35,47 @@
     <div id="wrapper">
         <div class="left-column">
             <form action="" method="get">
+                <div class="search">
+                    <input type="text" name="name" class="searchTerm" placeholder="Search by company:"/>
+                </div>
                 <input type="checkbox" name="filterSoftware" value="true">  Software Developer<br>
                 <input type="checkbox" name="filterDataScience" value="true">  Data Science/Analytics<br>
                 <input type="checkbox" name="filterThisWeek" value="true">  Show only This Week<br>
+                <input type="checkbox" name="filterDone" value="true">  Companies you applied<br>
                 <input type="submit" value="Apply filter">
             </form>
         </div>
         <div class="right-column">
-            <div class="search">
-                <!--div class="search-company"-->
-                <form action="" method="get">
-                    <input type="text" name="name" class="searchTerm" placeholder="Search by company:"/>
-                </form>
-                <!--/div-->
 
-                <!--div class="search-date"-->
-                <!--/div-->
-            </div>
+            <form action="" method="get">
+                <input type="submit" value="Apply CheckBox">
 
-            <table class="table" id="myTable">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th class="company">Company</th>
-                    <!--th>Title</th-->
-                    <th class="url">URL</th>
-                    <th class="date">Date Added</th>
-                </tr>
-                </thead>
+                <table class="table" id="myTable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="company">Company</th>
+                        <!--th>Title</th-->
+                        <th class="url">URL</th>
+                        <th class="date">Date Added</th>
+                    </tr>
+                    </thead>
 
-                <tbody>
+                    <tbody>
 
-                {{range .}}
-                    <!--form action="" method="POST"-->
-                        <tr>
-                            <td ><input type="checkbox" name="appliedCheckbox" value="{{.ID}}" id="{{.ID}}"></td>
-                            <td class="company">{{.Company}}</td>
-                            <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
-                            <td class="date">{{.DateAdded}}</td>
-                        </tr>
-                    <!--/form-->
-                {{end}}
-                </tbody>
-            </table>
+                    {{range .}}
+
+                            <tr>
+                                <td ><input type="checkbox" name="appliedCheckbox" value="{{.ID}}" id="{{.ID}}" {{.Checked}}></td>
+                                <td class="company">{{.Company}}</td>
+                                <td class="url"><a href="{{.URL}}">{{.Title}}</a></td>
+                                <td class="date">{{.DateAdded}}</td>
+                            </tr>
+
+                    {{end}}
+                    </tbody>
+                </table>
+            </form>
 
         </div> <!-- end of right column-->
     </div><!-- end of wrapper -->
