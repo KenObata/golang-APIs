@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,7 +26,7 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 
 	name := r.FormValue("name")
 
-	var filter_condition [3]bool = [3]bool{false, false, false}
+	var filter_condition [4]bool = [4]bool{false, false, false, false}
 	checkSoftware := r.FormValue("filterSoftware")
 	if checkSoftware == "true" {
 		filter_condition[0] = true
@@ -39,14 +40,73 @@ func HomeHandlerAfterLogin(w http.ResponseWriter, r *http.Request) {
 	if checkThisWeek == "true" {
 		filter_condition[2] = true
 	}
+	done := r.FormValue("filterDone")
+	if done == "true" {
+		filter_condition[3] = true
+	}
+	//pass SessionID to cookie
+	if SessionID != "" {
+		expiration := time.Now().Add(7 * 24 * time.Hour) //1 week
+		cookie := &http.Cookie{
+			Name:    "SessionID",
+			Value:   SessionID,
+			Path:    "/",
+			Expires: expiration,
+		}
+		http.SetCookie(w, cookie)
+	}
+
+	//get user ID if sessionID exists
+	cookie, err := r.Cookie("SessionID")
+	var sessionID string = ""
+	var userId = "-1"
+	if cookie != nil {
+		sessionID = cookie.Value
+		//get userId
+		userId, err = GetKey(context.Background(), sessionID)
+		if err != nil {
+			log.Println("error from GetKey(): ", err)
+		}
+		log.Println("userId: ", userId)
+	}
+
+	var new_job_struct []JsonJob
+	//get all checkboxes and insert to user_job table if checked.
+	r.ParseForm()
+	jobIdSelected := r.Form["appliedCheckbox"]
+	userIdint, _ := strconv.Atoi(userId)
+	if userId != "-1" {
+		for _, jobId := range jobIdSelected {
+			//insert postgres job_user table
+
+			jobIdint, _ := strconv.Atoi(jobId)
+			log.Println("jobId: ", jobIdint, " is checked.")
+			err = InsertUserJob(userIdint, jobIdint)
+			if err != nil {
+				log.Println("InsertUserJob failed: ", err)
+			}
+		}
+	}
+	new_job_struct = ReadUserCustomPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2], filter_condition[3], userIdint)
+	//new_job_struct = ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
+	log.Println("len(new_job_struct): ", len(new_job_struct))
 	//pass filter condition
-	new_job_struct := ReadPostgres(name, filter_condition[0], filter_condition[1], filter_condition[2])
 	t.Execute(w, new_job_struct)
 	time.Sleep(1000)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	//get uuid if exists in cookie
+	//get SessionID if exists in cookie
+	cookie, err := r.Cookie("SessionID")
+	var sessionID string = ""
+	if cookie != nil {
+		sessionID = cookie.Value
+		//httpRedirect if SessionID exists.
+		target := "http://" + r.Host + "/index-login-success"
+		log.Println("http redirect to ", target)
+		http.Redirect(w, r, target, http.StatusFound)
+	}
+	log.Println("local sessionID:", sessionID)
 
 	// Working Directory
 	wd, err := os.Getwd()

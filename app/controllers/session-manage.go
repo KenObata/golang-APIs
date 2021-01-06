@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"time"
 
 	redis "github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
@@ -15,10 +14,10 @@ var ctx = context.Background()
 
 func Init_redis() {
 	var host string
-	if os.Getenv("MONGO_SERVER") == "" {
+	if os.Getenv("REDIS_SERVER") == "" {
 		host = MongoDBHost
 	} else {
-		host = os.Getenv("MONGO_SERVER")
+		host = os.Getenv("REDIS_SERVER")
 	}
 	rClient = redis.NewClient(&redis.Options{
 		Addr:     host + ":6379",
@@ -42,13 +41,13 @@ func SetKey(ctx context.Context, userId string) (string, error) {
 	uu := u.String()
 
 	//log.Println("key_str:", key_str)
-	setErr := rClient.Set(ctx, uu, userId, 10*time.Second)
+	setErr := rClient.Set(ctx, uu, userId, 0) //set no expiration.
 	//log.Println("result of set:", err.Err(), "| ", err.Val())
 	if setErr.Err() != nil {
 		log.Println("error from rClient.Set()", setErr.Err())
 		return "", setErr.Err()
 	} else {
-		log.Println("SetKey success.")
+		log.Println("SetKey success: ", uu)
 	}
 	return uu, nil
 }
@@ -58,6 +57,8 @@ func GetKey(ctx context.Context, uuid string) (string, error) {
 	res, err := rClient.Get(ctx, uuid).Result()
 	if err != nil {
 		return "", err
+	} else {
+		log.Println("GetKey: ", res)
 	}
 	return res, nil
 }
