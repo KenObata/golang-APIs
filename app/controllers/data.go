@@ -16,6 +16,7 @@ type JsonJob struct {
 	Title     string `json:"title"`
 	Company   string `json:"company"`
 	DateAdded string `json:"dateadded"`
+	Checked   string `json:"checked"`
 }
 
 // Array for Job struct

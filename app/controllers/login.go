@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"html/template"
 	"log"
 	"net/http"
@@ -40,20 +41,14 @@ func InternalHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//create a session by Redis
-		/*uuid, err := SetKey(context.Background(), id) //userFiltered[0] = User struct
+		SessionID, err = SetKey(context.Background(), id) //userFiltered[0] = User struct
 		if err != nil {
 			log.Println(err)
 		} else {
-			log.Println("uuid: ", uuid)
-			//pass uuid to cookie
+			log.Println("SessionID: ", SessionID)
+			//pass uuid to cookie -> do it in th HomePageAfterHandler
 		}
-		//test get by uuid--------------
-		res, err := GetKey(context.Background(), uuid)
-		log.Println("GetKey:", res)
-		if err != nil {
-			log.Println("GetKey error:", err)
-		} //------------------------------
-		*/
+
 		//http Redirect
 		target := "http://" + r.Host + "/userpost"
 		log.Println("http redirect to ", target)
