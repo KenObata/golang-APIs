@@ -9,3 +9,4 @@ terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/3.21.0/darwin
 idea/dbnavigator.xml
 .idea/sqldialects.xml
 flyway/conf/flyway.conf
+.idea/misc.xml
