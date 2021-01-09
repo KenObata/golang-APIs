@@ -269,7 +269,7 @@ func ReadUserCustomPostgres(user_iput string, checkSoftware bool, checkDataScien
 		toBeAdded = true //reset the flag.
 	}
 	db.Close()
-	log.Println("jobs: ", jobs)
+	//log.Println("jobs: ", jobs)
 	log.Println("end of ReadUserCustomPostgres")
 	return jobs
 }
