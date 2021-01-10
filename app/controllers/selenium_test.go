@@ -9,7 +9,6 @@ import (
 )
 
 //some useful info:https://qiita.com/tenten0213/items/1f897ff8a64bd8b5270c
-
 /*
 func init() { //TestMain(m *testing.M)
 	log.Println("init() called.")
@@ -43,6 +42,7 @@ func init() { //TestMain(m *testing.M)
 		log.Println(err_createCollection_User)
 	}
 }
+
 */
 
 //var agoutiDriver *agouti.WebDriver
@@ -61,14 +61,14 @@ func TestSignUpHandler(t *testing.T) {
 	}
 	log.Println(page.Title())
 	//go to index.html
-	/*
-		err2 := page.Navigate("http://localhost:8080")
-		if err2 != nil {
-			log.Fatalf("Failed to navigate:%v", err2)
-		}
-	*/
+
+	err2 := page.Navigate("http://localhost:8080")
+	if err2 != nil {
+		log.Fatalf("Failed to navigate:%v", err2)
+	}
+
 	time.Sleep(5000)
-	//page.Find("signup").Click()
+	page.Find("signup").Click()
 }
 
 /*
