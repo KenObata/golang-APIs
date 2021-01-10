@@ -6,6 +6,6 @@ spec:
   selector:
     app: builder
   ports:
-    - port: 80 #80->8080?
+    - port: 80 #80->8080 yes, we need default 8080.
     #- targetPort: 8080
   type: LoadBalancer

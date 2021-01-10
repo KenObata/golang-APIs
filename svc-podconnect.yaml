@@ -7,4 +7,5 @@ spec:
     app: db
   ports:
     - port: 5432
+
   type: ClusterIP

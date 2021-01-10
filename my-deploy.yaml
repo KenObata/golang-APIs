@@ -16,7 +16,9 @@ spec:
         - name: builder
           image: kenobata/golang-scraping:latest # is this right?
           ports:
-            - containerPort: 80
+            - containerPort: 80 # changed from 80->8080
           env: # POD's environment setting for const
           - name: MONGO_SERVER
             value: mongo.default.svc.cluster.local.  # <-host.docker.internal #mongo comes from app name of volume
+          - name: REDIS_SERVER
+            value: redis.default.svc.cluster.local
