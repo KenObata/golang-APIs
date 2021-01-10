@@ -10,9 +10,11 @@ services:
     depends_on:
       - mongodb
       - db
+      - redis
     tty: true
     environment:
       - MONGO_SERVER=mongodb   #NOT host.docker.internal
+      - REDIS_SERVER=redis
 
   mongodb:
     image: mongo
@@ -32,6 +34,12 @@ services:
       - "5433:5432"
     volumes:
       - ./flyway/init:/docker-entrypoint-initdb.d # init file for Create DataBase
+
+  redis:
+    image: redis
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes --requirepass foobared
 
 volumes:
   mongodata:
