@@ -10,3 +10,5 @@ idea/dbnavigator.xml
 .idea/sqldialects.xml
 flyway/conf/flyway.conf
 .idea/misc.xml
+stock.json
+
